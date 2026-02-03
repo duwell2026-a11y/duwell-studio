@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DUWELL Studio - 최종 완성</title>
+    <title>DUWELL Studio - 주문 가이드 완성</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@100;300;400;500;700;900&family=Black+Han+Sans&family=Do+Hyeon&family=Song+Myung&family=Nanum+Pen+Script&family=Gamja+Flower&family=East+Sea+Dokdo&family=Hi+Melody&family=Sunflower:wght@300;500;700&family=Gothic+A1:wght@100;400;700;900&family=Poor+Story&family=Gaegu:wght@300;400;700&family=Yeon+Sung&family=Jua&family=Dokdo&family=Stylish&family=Gugi&family=Kirang+Haerang&family=Playfair+Display:wght@400;700&family=Montserrat:wght@100;400;700;900&family=Pacifico&family=Cinzel:wght@400;700&family=Dancing+Script:wght@400;700&family=Bebas+Neue&family=Orbitron:wght@400;700&family=Lobster&family=Anton&family=Indie+Flower&family=Shadows+Into+Light&family=Permanent+Marker&family=Amatic+SC:wght@400;700&family=Caveat:wght@400;700&family=Satisfy&family=Courgette&display=swap" rel="stylesheet">
     <style>
@@ -65,10 +65,6 @@
         .mode-btn { flex: 1; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.3s; background: transparent; color: #666; }
         .mode-btn.active { background: var(--duwell-wine); color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
-        #emb-notice {
-            display: none; font-size: 12px; color: #e74c3c; line-height: 1.5; background: #fff0f0; padding: 10px; border-radius: 8px; border: 1px solid #ffcccc; margin-top: 5px;
-        }
-
         #towelMockup {
             width: 900px;
             display: flex; flex-direction: column; align-items: center;
@@ -125,7 +121,7 @@
         .action-btn { width: 100%; padding: 16px; border-radius: 10px; font-weight: bold; cursor: pointer; border: none; font-size: 16px; margin-top: 8px; }
         .btn-print { background: var(--duwell-wine); color: white; }
         .btn-svg { background: #34495e; color: white; font-size: 14px; padding: 12px; }
-        .btn-send { background: #1a1a1a; color: white; }
+        .btn-mail { background: #1a1a1a; color: white; }
         
         input[type="range"] { accent-color: var(--duwell-wine); flex: 1; height: 20px; }
         input[type="color"] { width: 40px; height: 40px; border: none; border-radius: 50%; overflow: hidden; cursor: pointer; }
@@ -137,11 +133,12 @@
         .input-field { width: 100%; padding: 10px; margin-bottom: 8px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Noto Sans KR'; font-size: 13px; }
         .input-field:focus { border-color: var(--duwell-wine); outline: none; }
         
-        .delivery-notice {
-            background-color: #f8f9fa; border: 1px solid #eee; padding: 10px; border-radius: 6px; margin-bottom: 10px;
-            font-size: 11px; color: #555; line-height: 1.5; letter-spacing: -0.5px;
+        /* 🔥 안내 박스 스타일 */
+        .guide-box {
+            background-color: #f0f4f8; border-left: 4px solid var(--duwell-wine); padding: 15px; margin-top: 20px; border-radius: 4px;
         }
-        .delivery-notice strong { color: var(--duwell-wine); }
+        .guide-text { font-size: 13px; color: #333; margin-bottom: 5px; line-height: 1.4; }
+        .guide-alert { font-size: 12px; color: #e74c3c; font-weight: bold; margin-top: 5px; }
     </style>
 </head>
 <body>
@@ -172,11 +169,6 @@
             <div class="mode-switch">
                 <button class="mode-btn active" id="btn-print" onclick="setMode('print')">🖨️ 전사 인쇄</button>
                 <button class="mode-btn" id="btn-embroidery" onclick="setMode('embroidery')">🧵 컴퓨터 자수</button>
-            </div>
-            
-            <div id="emb-notice">
-                <b>[안내]</b> 자수는 잉크 인쇄가 아닌 '실'로 작업하는 방식입니다.<br>
-                화면에서 보시는 색상과 <b>가장 유사한 실 컬러</b>로 대체되어 제작되므로, 미세한 차이가 있을 수 있습니다.
             </div>
         </div>
 
@@ -213,11 +205,11 @@
             <label style="font-size:12px; margin-top:10px; margin-bottom:5px; color:#555;">📅 희망 배송일 (선택)</label>
             <input type="date" id="custDeliveryDate" class="input-field">
             
-            <div class="delivery-notice">
+            <div style="background-color: #f8f9fa; border: 1px solid #eee; padding: 10px; border-radius: 6px; margin-bottom: 10px; font-size: 11px; color: #555; line-height: 1.5;">
                 ⚠️ <b>제작 기간 안내 (발송일 기준 평일)</b><br>
                 - <b>전사 인쇄:</b> 2~3일 소요<br>
                 - <b>컴퓨터 자수:</b> 5~6일 소요<br>
-                <span style="color:#888; margin-top:3px; display:block;">* 주문 물량에 따라 일정이 지연될 수 있습니다.<br>* 택배사 사정에 따라 배송 완료일은 변경될 수 있습니다.</span>
+                <span style="color:#888;">* 주문 물량 및 택배사 사정에 따라 지연될 수 있습니다.</span>
             </div>
 
             <label style="font-size:12px; margin-bottom:5px; color:#555;">🎉 행사 날짜 (선택)</label>
@@ -225,26 +217,23 @@
         </div>
 
         <div class="group">
-            <label>✨ 심볼 아이콘 (20종)</label>
+            <label>✨ 심볼 아이콘 (20종 정예)</label>
             <div class="item-grid" style="grid-template-columns: repeat(5, 1fr);">
                 <button class="icon-btn" onclick="addIcon('heart')" title="하트">♥</button>
                 <button class="icon-btn" onclick="addIcon('star')" title="별">★</button>
                 <button class="icon-btn" onclick="addIcon('crown')" title="왕관">👑</button>
                 <button class="icon-btn" onclick="addIcon('gift')" title="선물상자">🎁</button>
                 <button class="icon-btn" onclick="addIcon('music')" title="음표">🎵</button>
-                
                 <button class="icon-btn" onclick="addIcon('camera')" title="카메라">📷</button>
                 <button class="icon-btn" onclick="addIcon('cross')" title="교회십자가">✝️</button>
                 <button class="icon-btn" onclick="addIcon('home')" title="집">🏠</button>
                 <button class="icon-btn" onclick="addIcon('smile')" title="스마일">🙂</button>
                 <button class="icon-btn" onclick="addIcon('check')" title="체크">✔</button>
-                
                 <button class="icon-btn" onclick="addIcon('plane')" title="비행기">✈️</button>
                 <button class="icon-btn" onclick="addIcon('car')" title="자동차">🚗</button>
                 <button class="icon-btn" onclick="addIcon('thumbsup')" title="엄지척">👍</button>
                 <button class="icon-btn" onclick="addIcon('sun')" title="해">☀️</button>
                 <button class="icon-btn" onclick="addIcon('moon')" title="달">🌙</button>
-                
                 <button class="icon-btn" onclick="addIcon('cloud')" title="구름">☁️</button>
                 <button class="icon-btn" onclick="addIcon('circle')" title="원">●</button>
                 <button class="icon-btn" onclick="addIcon('square')" title="사각형">■</button>
@@ -312,10 +301,18 @@
             </div>
         </div>
 
-        <div style="margin-top: 10px;">
-            <button class="action-btn btn-print" onclick="exportPrint()">✅ 인쇄 파일 다운로드</button>
-            <button class="action-btn btn-svg" onclick="exportSVG()">🧵 자수용 SVG 다운로드</button>
-            <button class="action-btn btn-send" onclick="sendEmail()">📧 메일 보내기 (정보 자동첨부)</button>
+        <div class="guide-box">
+            <p class="guide-text"><b>1️⃣ 파일 다운로드 (필수)</b></p>
+            <p class="guide-text" id="downloadGuideText">작업 방식에 맞는 파일을 먼저 다운로드해주세요.</p>
+            
+            <div style="margin-top:10px; display:flex; gap:5px; flex-direction:column;">
+                <button class="action-btn btn-print" id="btnDlImage" onclick="exportPrint()">💾 디자인 파일(이미지) 다운로드</button>
+                <button class="action-btn btn-svg" id="btnDlSvg" onclick="exportSVG()">🧵 자수용 파일(SVG) 다운로드</button>
+            </div>
+
+            <p class="guide-text" style="margin-top:15px;"><b>2️⃣ 메일 보내기 (주문 접수)</b></p>
+            <button class="action-btn btn-mail" onclick="sendEmail()">📧 주문서 다운로드</button>
+            <p class="guide-alert">※ 메일 창이 열리면 위에서 다운로드한 파일을 <br>반드시 [첨부]하여 보내주세요! (duwell2026@gmail.com)</p>
         </div>
     </div>
 </div>
@@ -328,7 +325,6 @@
     let currentMode = 'print'; 
     let currentTowelColor = '#ffffff';
 
-    // 🔥 [수정완료] 검증된 20개 아이콘 경로 (문제 아이콘 제거)
     const iconPaths = {
         'heart': 'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z',
         'star': 'M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z',
@@ -382,6 +378,7 @@
     window.addEventListener('load', fitCanvasToScreen);
     window.addEventListener('resize', fitCanvasToScreen);
 
+    // ✨ 모드에 따라 다운로드 버튼/가이드 문구 변경
     function setMode(mode) {
         currentMode = mode;
         const mockup = document.getElementById('towelMockup');
@@ -389,18 +386,37 @@
         const btnPrint = document.getElementById('btn-print');
         const btnEmb = document.getElementById('btn-embroidery');
         const embNotice = document.getElementById('emb-notice'); 
+        
+        // 다운로드 가이드 UI 제어
+        const guideText = document.getElementById('downloadGuideText');
+        const btnDlImage = document.getElementById('btnDlImage');
+        const btnDlSvg = document.getElementById('btnDlSvg');
 
         if (mode === 'print') {
+            // [전사 모드]
             btnPrint.classList.add('active'); btnEmb.classList.remove('active');
             mockup.className = 'mode-print';
             modeText.innerText = '전사 인쇄 (화이트 밴드 고정)';
-            embNotice.style.display = 'none'; 
+            embNotice.style.display = 'none';
+            
+            // 안내 문구 & 버튼 제어
+            guideText.innerHTML = "전사 인쇄는 <b>[디자인 파일]</b> 1개만 다운로드하면 됩니다.";
+            btnDlImage.style.display = 'block';
+            btnDlSvg.style.display = 'none'; // 자수 파일 숨김
+
             canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
         } else {
+            // [자수 모드]
             btnPrint.classList.remove('active'); btnEmb.classList.add('active');
             mockup.className = 'mode-embroidery';
             modeText.innerText = '컴퓨터 자수 (일반 수건형)';
-            embNotice.style.display = 'block'; 
+            embNotice.style.display = 'block';
+            
+            // 안내 문구 & 버튼 제어
+            guideText.innerHTML = "자수는 <b>[디자인 파일]</b>과 <b>[자수용 파일]</b> 2개 모두 필요합니다.";
+            btnDlImage.style.display = 'block';
+            btnDlSvg.style.display = 'block'; // 둘 다 보임
+
             canvas.setBackgroundColor(null, canvas.renderAll.bind(canvas));
         }
         canvas.renderAll();
@@ -561,9 +577,23 @@
         const eventDate = document.getElementById('custDate').value || '미정';
 
         const subject = `[수건주문] ${name}님 시안 전송`;
-        const body = `안녕하세요, DUWELL입니다.%0D%0A%0D%0A아래 주문 정보를 확인해주시고, %0D%0A방금 다운로드하신 시안 파일(이미지+자수파일)을 꼭 이 메일에 첨부해서 보내주세요!%0D%0A%0D%0A==============================%0D%0A📝 [주문 고객 정보]%0D%0A- 성함: ${name}%0D%0A- 연락처: ${phone}%0D%0A- 배송지: ${address}%0D%0A- 희망배송일: ${deliveryDate}%0D%0A- 행사날짜: ${eventDate}%0D%0A==============================%0D%0A%0D%0A* 파일 미첨부 시 작업이 지연될 수 있습니다.`;
+        const body = `안녕하세요, DUWELL입니다.
+
+아래 주문 정보를 확인해주시고, 
+방금 다운로드하신 시안 파일(이미지/자수파일)을 꼭 이 메일에 첨부해서 보내주세요!
+
+==============================
+📝 [주문 고객 정보]
+- 성함: ${name}
+- 연락처: ${phone}
+- 배송지: ${address}
+- 희망배송일: ${deliveryDate}
+- 행사날짜: ${eventDate}
+==============================
+
+* 파일 미첨부 시 작업이 지연될 수 있습니다.`;
         
-        window.location.href = `mailto:duwell2026@gmail.com?subject=${subject}&body=${body}`;
+        window.location.href = `mailto:duwell2026@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     }
 </script>
 </body>
