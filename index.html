@@ -202,7 +202,7 @@
 
     async function fetchData() {
         try {
-            const response = await fetch(scriptURL);
+           const response = await fetch(scriptURL + "?nocache=" + new Date().getTime());
             const data = await response.json();
             productData = data.products;
             packagingData = data.packaging;
@@ -341,3 +341,4 @@
 </script>
 </body>
 </html>
+
