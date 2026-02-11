@@ -3,613 +3,341 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DUWELL Studio - 주문서 파일 기능</title>
+    <title>DUWELL Studio</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@100;300;400;500;700;900&family=Black+Han+Sans&family=Do+Hyeon&family=Song+Myung&family=Nanum+Pen+Script&family=Gamja+Flower&family=East+Sea+Dokdo&family=Hi+Melody&family=Sunflower:wght@300;500;700&family=Gothic+A1:wght@100;400;700;900&family=Poor+Story&family=Gaegu:wght@300;400;700&family=Yeon+Sung&family=Jua&family=Dokdo&family=Stylish&family=Gugi&family=Kirang+Haerang&family=Playfair+Display:wght@400;700&family=Montserrat:wght@100;400;700;900&family=Pacifico&family=Cinzel:wght@400;700&family=Dancing+Script:wght@400;700&family=Bebas+Neue&family=Orbitron:wght@400;700&family=Lobster&family=Anton&family=Indie+Flower&family=Shadows+Into+Light&family=Permanent+Marker&family=Amatic+SC:wght@400;700&family=Caveat:wght@400;700&family=Satisfy&family=Courgette&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@100;300;400;500;700;900&family=Black+Han+Sans&family=Do+Hyeon&family=Jua&family=Nanum+Pen+Script&family=Gugi&family=Yeon+Sung&family=East+Sea+Dokdo&family=Gamja+Flower&family=Sunflower:wght@300;500;700&family=Gaegu&family=Poor+Story&family=Song+Myung&family=Stylish&display=swap" rel="stylesheet">
     <style>
-        :root { 
-            --duwell-wine: #800020; 
-            --towel-color: #ffffff;
-            --towel-texture: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMiIvPgo8Y2lyY2xlIGN4PSIyIiBjeT0iMiIgcj0iMSIgZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIwLjEiLz4KPC9zdmc+');
-            --band-texture: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAAXNSR0IArs4c6QAAABVJREFUCB1jYACCCxb8Z2BgYARjAAcAAf8B/9+0AAAAAElFTkSuQmCC');
-        }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
+        :root { --duwell-wine: #800020; --towel-color: #ffffff; --towel-texture: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMiIvPgo8Y2lyY2xlIGN4PSIyIiBjeT0iMiIgcj0iMSIgZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIwLjEiLz4KPC9zdmc+'); }
+        * { box-sizing: border-box; touch-action: manipulation; }
         body { font-family: 'Noto Sans KR', sans-serif; background: #e0e4e8; margin: 0; display: flex; height: 100vh; overflow: hidden; }
-        
         .container { display: flex; width: 100%; height: 100%; }
-        .sidebar { width: 420px; background: white; box-shadow: 4px 0 20px rgba(0,0,0,0.1); padding: 25px; z-index: 20; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; }
         
-        .workspace { 
-            flex: 1; 
-            background-color: #d1d8e0;
-            background-image: radial-gradient(#bbc 1px, transparent 1px);
-            background-size: 20px 20px;
-            position: relative; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            overflow: hidden; 
+        #kakaotalk-banner {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; background: #fee500; 
+            color: #3c1e1e; padding: 12px; z-index: 20000; font-size: 13px; font-weight: bold;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2); align-items: center; justify-content: space-between;
+        }
+        #kakaotalk-banner button {
+            background: #3c1e1e; color: #fee500; border: none; padding: 5px 10px; 
+            border-radius: 4px; font-weight: bold; cursor: pointer; margin-left: 10px;
         }
 
-        @media (max-width: 900px) {
-            body { height: auto; overflow-y: auto; }
-            .container { flex-direction: column; height: auto; }
-            .workspace { 
-                order: 1; width: 100%; min-height: 320px; position: sticky; top: 0; z-index: 100;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.1); padding: 30px 0;
-            }
-            .sidebar { order: 2; width: 100%; height: auto; padding: 20px; overflow-y: visible; }
-        }
+        #customPopup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10000; justify-content: center; align-items: center; }
+        .popup-content { background: white; padding: 25px; border-radius: 15px; width: 85%; max-width: 320px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .popup-title { font-size: 18px; font-weight: 900; color: var(--duwell-wine); margin-bottom: 10px; }
+        .popup-msg { font-size: 14px; color: #555; margin-bottom: 20px; line-height: 1.5; }
+        .popup-btn { background: var(--duwell-wine); color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; cursor: pointer; width: 100%; font-size: 15px; }
 
+        #loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column; }
+        .loader { border: 5px solid #f3f3f3; border-top: 5px solid var(--duwell-wine); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .sidebar { width: 420px; background: white; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; box-shadow: 4px 0 15px rgba(0,0,0,0.1); z-index: 10; }
+        .workspace { flex: 1; background-color: #d1d8e0; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .logo { color: var(--duwell-wine); font-size: 24px; font-weight: 900; text-align: center; border-bottom: 2px solid var(--duwell-wine); padding-bottom: 10px; margin: 0; }
         .group { padding-bottom: 15px; border-bottom: 1px solid #eee; }
-        label { display: block; font-weight: 700; margin-bottom: 10px; font-size: 14px; color: #333; }
-        
-        .item-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-height: 180px; overflow-y: auto; padding: 5px; background: #f9f9f9; border-radius: 8px; }
-        .item-btn { padding: 12px 5px; border: 1px solid #ddd; background: white; cursor: pointer; font-size: 12px; border-radius: 6px; text-align: center; transition: 0.2s; font-weight: 500; }
-        .item-btn:active { background: #fff0f3; border-color: var(--duwell-wine); }
-        
-        .towel-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; justify-items: center; max-height: 150px; overflow-y: auto; padding: 5px; }
-        .towel-option { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ddd; cursor: pointer; transition: transform 0.2s; box-shadow: inset 0 0 5px rgba(0,0,0,0.1); }
-        .towel-option.active { border-color: var(--duwell-wine); transform: scale(1.1); border-width: 3px; }
+        label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 14px; color: #333; }
+        .input-field { width: 100%; padding: 12px; margin-bottom: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        .action-btn { width: 100%; padding: 16px; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; font-size: 16px; background: var(--duwell-wine); color: white; margin-top: 5px; box-shadow: 0 4px 6px rgba(128,0,32,0.2); }
+        .towel-btn { flex: 1; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; font-size:14px; }
+        .item-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; max-height: 180px; overflow-y: auto; padding: 5px; background: #f9f9f9; border-radius: 8px; }
+        .item-btn { padding: 12px 10px; border: 1px solid #ddd; background: white; cursor: pointer; font-size: 13px; border-radius: 6px; text-align: center; }
+        .icon-btn { padding: 10px; border: 1px solid #eee; background: white; cursor: pointer; border-radius: 6px; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; }
+        .icon-btn svg { width: 28px; height: 28px; fill: #333; }
+        .photo-btn { background: #34495e; color: white; border: none; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; }
+        .product-select { width: 100%; padding: 14px; border: 2px solid var(--duwell-wine); border-radius: 8px; font-size: 14px; font-weight: bold; color: #333; cursor: pointer; background: #fff; }
+        .towel-option { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #ddd; cursor: pointer; background-image: var(--towel-texture); background-blend-mode: multiply; position: relative; }
+        .towel-option.active { border-color: var(--duwell-wine); transform: scale(1.15); border-width: 3px; z-index: 2; box-shadow: 0 0 10px rgba(0,0,0,0.2); }
+        .price-box { background: #fffafb; padding: 15px; border-radius: 8px; border: 2px solid var(--duwell-wine); text-align: right; margin-top: 10px; }
+        .price-total { font-size: 22px; font-weight: 900; color: var(--duwell-wine); margin-top: 5px; }
+        .price-info { font-size: 13px; color: #555; margin-bottom: 5px; font-weight: bold; }
+        .price-warning { color: #e74c3c; font-size: 11px; font-weight: bold; margin-top: 8px; display: none; background: #fff; padding: 5px; border-radius: 4px; border: 1px solid #ffcccc; text-align: center; }
+        .mockup-wrapper { width: 100%; display: flex; justify-content: center; align-items: center; }
+        #towelMockup { width: 900px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
+        .terry-texture { background-color: var(--towel-color); background-image: var(--towel-texture); background-blend-mode: multiply; }
+        .towel-top { width: 100%; height: 70px; border-radius: 12px 12px 0 0; }
+        .towel-bottom { width: 100%; height: 90px; border-radius: 0 0 12px 12px; }
+        .canvas-band-wrapper { width: 100%; display: flex; justify-content: center; position: relative; }
+        .mode-print .canvas-band-wrapper { background: #ffffff; padding: 4px 0; box-shadow: inset 0 4px 6px rgba(0,0,0,0.1); }
+        .mode-embroidery .embroidery-bg { display: block; position: absolute; top:0; left:0; width:100%; height:100%; }
+        .preview-text { margin-top: 20px; font-weight: bold; font-size: 15px; color: #333; background: rgba(255,255,255,0.7); padding: 5px 15px; border-radius: 20px; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
 
-        .control-panel { display: flex; align-items: center; gap: 10px; margin-top: 10px; background: #fdfdfd; padding: 12px; border-radius: 8px; border: 1px solid #eee; }
-        .size-display { font-weight: bold; color: var(--duwell-wine); min-width: 55px; text-align: center; border: 1px solid var(--duwell-wine); border-radius: 4px; padding: 4px; font-size: 13px; }
-        
-        .align-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-top: 5px; }
-        .align-btn { padding: 8px 0; border: 1px solid #ddd; background: #fff; border-radius: 4px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
-        
-        .mode-switch { display: flex; gap: 10px; margin-bottom: 10px; background: #f0f0f0; padding: 5px; border-radius: 10px; }
-        .mode-btn { flex: 1; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.3s; background: transparent; color: #666; }
-        .mode-btn.active { background: var(--duwell-wine); color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-
-        #emb-notice {
-            display: none; font-size: 12px; color: #e74c3c; line-height: 1.5; background: #fff0f0; padding: 10px; border-radius: 8px; border: 1px solid #ffcccc; margin-top: 5px;
+        @media (max-width: 768px) {
+            body { display: block; overflow-y: auto; height: auto; }
+            .container { flex-direction: column-reverse; height: auto; display: flex; }
+            .workspace { position: sticky; top: 0; z-index: 90; height: 220px; padding-top: 40px; padding-bottom: 20px; border-bottom: 2px solid var(--duwell-wine); box-shadow: 0 5px 15px rgba(0,0,0,0.15); background-color: #d1d8e0; }
+            .preview-text { display: none; } 
+            .mockup-wrapper { transform: scale(0.38); transform-origin: top center; height: 100px; }
+            .sidebar { width: 100%; padding: 15px; box-shadow: none; z-index: 10; overflow-y: visible; }
+            .towel-option { width: 42px; height: 42px; }
+            .item-grid { grid-template-columns: repeat(3, 1fr); max-height: 220px; }
+            .action-btn { font-size: 18px; padding: 18px; }
+            #kakaotalk-banner { padding-top: env(safe-area-inset-top); } 
         }
-
-        #towelMockup {
-            width: 900px;
-            display: flex; flex-direction: column; align-items: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.25), 0 3px 10px rgba(0,0,0,0.1);
-            position: relative;
-            transform-origin: top center;
-            transition: all 0.3s ease;
-        }
-
-        .terry-texture {
-            background-color: var(--towel-color);
-            background-image: var(--towel-texture);
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.05); 
-        }
-        
-        .towel-top { 
-            width: 100%; height: 70px; border-radius: 12px 12px 0 0; position: relative; z-index: 2; 
-            background: linear-gradient(to bottom, rgba(255,255,255,0.3) 0%, rgba(0,0,0,0.05) 100%), var(--towel-color);
-            background-blend-mode: overlay, normal;
-        }
-        
-        .towel-bottom { 
-            width: 100%; height: 90px; border-radius: 0 0 12px 12px; position: relative; z-index: 2; 
-            background: linear-gradient(to top, rgba(0,0,0,0.1) 0%, rgba(255,255,255,0.1) 100%), var(--towel-color);
-            background-blend-mode: multiply, normal;
-        }
-
-        .band-container { width: 100%; position: relative; z-index: 1; }
-        
-        .embroidery-bg {
-            position: absolute; top:0; left:0; width:100%; height:100%; display: none;
-            background-color: var(--towel-color); 
-        }
-
-        .canvas-band-wrapper { width: 100%; display: flex; justify-content: center; position: relative; transition: all 0.3s ease; }
-
-        .mode-print .canvas-band-wrapper {
-            background: #ffffff; 
-            padding: 4px 0;
-            box-shadow: inset 0 4px 6px rgba(0,0,0,0.15), inset 0 -4px 6px rgba(0,0,0,0.15);
-            border-top: 1px solid rgba(0,0,0,0.05);
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
-        .mode-print .embroidery-bg { display: none; }
-
-        .mode-embroidery .canvas-band-wrapper { background: transparent; padding: 0; box-shadow: none; border: none; }
-        .mode-embroidery .embroidery-bg { display: block; }
-        .mode-embroidery .towel-top { border-radius: 12px 12px 0 0; margin-bottom: -1px; } 
-        .mode-embroidery .towel-bottom { border-radius: 0 0 12px 12px; margin-top: -1px; }
-
-        .canvas-container { border: none !important; } 
-        
-        .upload-area { background: #fffafb; border: 2px dashed var(--duwell-wine); padding: 20px; border-radius: 10px; text-align: center; cursor: pointer; font-weight: bold; color: var(--duwell-wine); }
-        .action-btn { width: 100%; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; font-size: 14px; margin-top: 5px; transition: 0.2s; }
-        .action-btn:hover { opacity: 0.9; transform: scale(1.01); }
-        
-        /* 버튼 컬러 */
-        .btn-print { background: var(--duwell-wine); color: white; }
-        .btn-svg { background: #34495e; color: white; }
-        .btn-txt { background: #2ecc71; color: white; } /* 주문서 다운로드 버튼 */
-        .btn-copy { background: #1a1a1a; color: white; } /* 복사 버튼 */
-        
-        input[type="range"] { accent-color: var(--duwell-wine); flex: 1; height: 20px; }
-        input[type="color"] { width: 40px; height: 40px; border: none; border-radius: 50%; overflow: hidden; cursor: pointer; }
-
-        .layer-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
-        .icon-btn { font-size: 20px; line-height: 1; padding: 8px; border: 1px solid #eee; background: white; cursor: pointer; border-radius: 4px; }
-        .icon-btn:hover { background-color: #f5f5f5; border-color: #ccc; }
-
-        .input-field { width: 100%; padding: 10px; margin-bottom: 8px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Noto Sans KR'; font-size: 13px; }
-        .input-field:focus { border-color: var(--duwell-wine); outline: none; }
-        
-        .delivery-notice {
-            background-color: #f8f9fa; border: 1px solid #eee; padding: 10px; border-radius: 6px; margin-bottom: 10px;
-            font-size: 11px; color: #555; line-height: 1.5; letter-spacing: -0.5px;
-        }
-        .delivery-notice strong { color: var(--duwell-wine); }
-        
-        .step-title { font-size: 14px; font-weight: 800; color: #333; margin: 15px 0 5px 0; display: block; }
     </style>
 </head>
 <body>
 
+<div id="kakaotalk-banner">
+    ⚠️ 카카오톡에서는 오류가 날 수 있어요!
+    <button onclick="copyCurrentLink()">🔗 주소 복사 (Safari로 열기)</button>
+</div>
+
+<div id="customPopup">
+    <div class="popup-content">
+        <div class="popup-title" id="popupTitle">알림</div>
+        <div class="popup-msg" id="popupMsg">내용</div>
+        <button class="popup-btn" onclick="closePopup()">확인</button>
+    </div>
+</div>
+
+<div id="loading">
+    <div class="loader"></div>
+    <h3 style="color:var(--duwell-wine);">DUWELL STUDIO</h3>
+    <p style="font-size:14px; color:#555;">최신 가격 정보를 불러오고 있습니다...</p>
+</div>
+
 <div class="container">
+    <div class="sidebar">
+        <h1 class="logo">DUWELL STUDIO</h1>
+        
+        <div class="group"><label>1️⃣ 제품 선택 (라인업)</label><select id="productSelect" class="product-select" onchange="changeProduct()"></select></div>
+        <div class="group"><label>2️⃣ 색상 선택</label><div id="towel-grid" style="display:flex; flex-wrap:wrap; gap:10px;"></div></div>
+        <div class="group"><label>🛠️ 제작 방식</label><div style="display:flex; gap:10px; background:#f0f0f0; padding:5px; border-radius:10px;"><button id="btn-p" class="towel-btn" onclick="setMode('print')">🖨️ 전사</button><button id="btn-e" class="towel-btn" onclick="setMode('embroidery')">🧵 자수</button></div></div>
+        <div class="group"><label>🎁 포장 옵션 선택</label><select id="packagingSelect" class="product-select" onchange="calcPrice()"></select></div>
+        <div class="group"><label>📸 내 사진/로고 넣기</label><button class="photo-btn" onclick="document.getElementById('upload').click()">📂 갤러리에서 불러오기</button><input type="file" id="upload" accept="image/*" style="display:none"></div>
+        
+        <div class="group"><label>✨ 심볼 아이콘 (20종)</label><div id="icon-grid" style="display:grid; grid-template-columns: repeat(4, 1fr); gap:5px; max-height: 180px; overflow-y:auto; padding:2px;"></div></div>
+        <div class="group"><label>🔤 폰트 & 컬러</label><div id="font-grid" class="item-grid"></div><input type="color" id="textColorPicker" value="#333333" oninput="changeTextColor(this.value)" style="width:100%; height:45px; border:none; margin-top:10px; cursor:pointer; border-radius:5px;"></div>
+        
+        <div class="group"><label>📐 편집 도구</label><div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:6px;"><button class="item-btn" onclick="alignObj('left')">좌측</button><button class="item-btn" onclick="alignObj('centerH')">가운데</button><button class="item-btn" onclick="alignObj('right')">우측</button><button class="item-btn" onclick="alignObj('centerFull')" style="color:var(--duwell-wine); font-weight:bold;">정중앙</button><button class="item-btn" onclick="changeLayer('front')">앞으로</button><button class="item-btn" onclick="changeLayer('back')">뒤로</button><button class="item-btn" style="color:red; grid-column: span 3; font-weight:bold;" onclick="deleteObj()">선택 삭제 (Del)</button></div></div>
+
+        <div class="group" style="background:#fffafb; border: 2px solid var(--duwell-wine); border-radius:10px; padding:15px; margin-top:20px;">
+            <label style="color:var(--duwell-wine); font-size:16px;">📝 최종 주문서 작성</label>
+            <input type="text" id="custName" placeholder="성함 (필수)" class="input-field">
+            <input type="tel" id="custPhone" placeholder="연락처 (필수)" class="input-field">
+            <input type="text" id="custAddress" placeholder="배송지 주소 (필수)" class="input-field">
+            <label style="font-size:12px; margin-top:5px;">📅 희망 수령일</label>
+            <input type="date" id="custDeliveryDate" class="input-field">
+            <hr style="margin: 15px 0; border:0; border-top:1px dashed #ddd;">
+            <label style="color:#333;">📦 수량 입력 (장)</label>
+            <input type="number" id="custQty" placeholder="0" class="input-field" style="font-weight:bold; font-size:16px;" oninput="calcPrice()">
+            <div class="price-box">
+                <div class="price-info">수건 단가: <span id="unitPriceDisplay">0</span>원</div>
+                <div class="price-info" id="packPriceInfo" style="display:none; color:#2980b9;">+ 포장비: <span id="packCostDisplay">0</span>원</div>
+                <div id="displayPrice" class="price-total">0원</div>
+                <div id="embroideryWarning" class="price-warning">※ 자수는 도안 침수(복잡도)에 따라<br>최종 금액이 변동될 수 있습니다.</div>
+            </div>
+            <button class="action-btn" onclick="sendDataToGoogleSheet()">주문 전송하기</button>
+        </div>
+    </div>
+
     <div class="workspace">
-        <div id="responsiveWrapper" style="display:flex; justify-content:center;">
+        <div class="mockup-wrapper">
             <div id="towelMockup" class="mode-print">
                 <div class="towel-body towel-top terry-texture"></div>
-                <div class="band-container">
-                    <div class="embroidery-bg terry-texture"></div>
-                    <div class="canvas-band-wrapper">
-                        <canvas id="mainCanvas"></canvas>
-                    </div>
+                <div class="band-container" style="width:100%; position:relative; z-index:1;">
+                    <div class="embroidery-bg terry-texture" style="display:none;"></div>
+                    <div class="canvas-band-wrapper"><canvas id="mainCanvas"></canvas></div>
                 </div>
                 <div class="towel-body towel-bottom terry-texture"></div>
             </div>
         </div>
-        <p id="infoText" style="margin-top: 25px; color: #333; font-weight: bold; font-size: 14px; text-align: center; z-index: 200; background: rgba(255,255,255,0.8); padding: 5px 15px; border-radius: 20px;">
-            <span style="color:var(--duwell-wine)">●</span> <span id="modeText">전사 인쇄 (화이트 밴드 고정)</span> 미리보기
-        </p>
-    </div>
-
-    <div class="sidebar">
-        <h1 class="logo">DUWELL STUDIO</h1>
-        <div class="group">
-            <label>🛠️ 작업 방식 선택 (필수)</label>
-            <div class="mode-switch">
-                <button class="mode-btn active" id="btn-print" onclick="setMode('print')">🖨️ 전사 인쇄</button>
-                <button class="mode-btn" id="btn-embroidery" onclick="setMode('embroidery')">🧵 컴퓨터 자수</button>
-            </div>
-            
-            <div id="emb-notice">
-                <b>[안내]</b> 자수는 잉크 인쇄가 아닌 '실'로 작업하는 방식입니다.<br>
-                화면에서 보시는 색상과 <b>가장 유사한 실 컬러</b>로 대체되어 제작되므로, 미세한 차이가 있을 수 있습니다.
-            </div>
-        </div>
-
-        <div class="group">
-            <label>🛁 수건 색상 선택</label>
-            <div class="towel-grid">
-                <div class="towel-option" style="background: #ffffff;" onclick="setTowel('#ffffff')" title="화이트"></div>
-                <div class="towel-option" style="background: #f5f5dc;" onclick="setTowel('#f5f5dc')" title="아이보리"></div>
-                <div class="towel-option" style="background: #800020;" onclick="setTowel('#800020')" title="와인"></div>
-                <div class="towel-option" style="background: #2f3640;" onclick="setTowel('#2f3640')" title="다크네이비"></div>
-                <div class="towel-option" style="background: #a4a4a4;" onclick="setTowel('#a4a4a4')" title="그레이"></div>
-                <div class="towel-option" style="background: #ffcccc;" onclick="setTowel('#ffcccc')" title="베이비핑크"></div>
-                <div class="towel-option" style="background: #dff9fb;" onclick="setTowel('#dff9fb')" title="스카이블루"></div>
-                <div class="towel-option" style="background: #e1b12c;" onclick="setTowel('#e1b12c')" title="머스타드"></div>
-                <div class="towel-option" style="background: #b0e0e6;" onclick="setTowel('#b0e0e6')" title="파우더블루"></div>
-                <div class="towel-option" style="background: #98fb98;" onclick="setTowel('#98fb98')" title="페일그린"></div>
-                <div class="towel-option" style="background: #e6e6fa;" onclick="setTowel('#e6e6fa')" title="라벤더"></div>
-                <div class="towel-option" style="background: #f08080;" onclick="setTowel('#f08080')" title="라이트코랄"></div>
-                <div class="towel-option" style="background: #4682b4;" onclick="setTowel('#4682b4')" title="스틸블루"></div>
-                <div class="towel-option" style="background: #556b2f;" onclick="setTowel('#556b2f')" title="올리브그린"></div>
-                <div class="towel-option" style="background: #8b4513;" onclick="setTowel('#8b4513')" title="새들브라운"></div>
-                <div class="towel-option" style="background: #708090;" onclick="setTowel('#708090')" title="슬레이트그레이"></div>
-                <div class="towel-option" style="background: #000080;" onclick="setTowel('#000080')" title="네이비"></div>
-                <div class="towel-option" style="background: #006400;" onclick="setTowel('#006400')" title="다크그린"></div>
-            </div>
-        </div>
-        
-        <div class="group">
-            <label>📝 주문 고객 정보 (메일 발송용)</label>
-            <input type="text" id="custName" placeholder="성함 (예: 홍길동)" class="input-field">
-            <input type="tel" id="custPhone" placeholder="연락처 (예: 010-1234-5678)" class="input-field">
-            <input type="text" id="custAddress" placeholder="배송지 주소" class="input-field">
-            
-            <label style="font-size:12px; margin-top:10px; margin-bottom:5px; color:#555;">📅 희망 배송일 (선택)</label>
-            <input type="date" id="custDeliveryDate" class="input-field">
-            
-            <div class="delivery-notice">
-                ⚠️ <b>제작 기간 안내 (발송일 기준 평일)</b><br>
-                - <b>전사 인쇄:</b> 2~3일 소요<br>
-                - <b>컴퓨터 자수:</b> 5~6일 소요<br>
-                <span style="color:#888; margin-top:3px; display:block;">* 주문 물량에 따라 일정이 지연될 수 있습니다.<br>* 택배사 사정에 따라 배송 완료일은 변경될 수 있습니다.</span>
-            </div>
-
-            <label style="font-size:12px; margin-bottom:5px; color:#555;">🎉 행사 날짜 (선택)</label>
-            <input type="date" id="custDate" class="input-field">
-        </div>
-
-        <div class="group">
-            <label>✨ 심볼 아이콘 (20종 정예)</label>
-            <div class="item-grid" style="grid-template-columns: repeat(5, 1fr);">
-                <button class="icon-btn" onclick="addIcon('heart')" title="하트">♥</button>
-                <button class="icon-btn" onclick="addIcon('star')" title="별">★</button>
-                <button class="icon-btn" onclick="addIcon('crown')" title="왕관">👑</button>
-                <button class="icon-btn" onclick="addIcon('gift')" title="선물상자">🎁</button>
-                <button class="icon-btn" onclick="addIcon('music')" title="음표">🎵</button>
-                <button class="icon-btn" onclick="addIcon('camera')" title="카메라">📷</button>
-                <button class="icon-btn" onclick="addIcon('cross')" title="교회십자가">✝️</button>
-                <button class="icon-btn" onclick="addIcon('home')" title="집">🏠</button>
-                <button class="icon-btn" onclick="addIcon('smile')" title="스마일">🙂</button>
-                <button class="icon-btn" onclick="addIcon('check')" title="체크">✔</button>
-                <button class="icon-btn" onclick="addIcon('plane')" title="비행기">✈️</button>
-                <button class="icon-btn" onclick="addIcon('car')" title="자동차">🚗</button>
-                <button class="icon-btn" onclick="addIcon('thumbsup')" title="엄지척">👍</button>
-                <button class="icon-btn" onclick="addIcon('sun')" title="해">☀️</button>
-                <button class="icon-btn" onclick="addIcon('moon')" title="달">🌙</button>
-                <button class="icon-btn" onclick="addIcon('cloud')" title="구름">☁️</button>
-                <button class="icon-btn" onclick="addIcon('circle')" title="원">●</button>
-                <button class="icon-btn" onclick="addIcon('square')" title="사각형">■</button>
-                <button class="icon-btn" onclick="addIcon('triangle')" title="삼각형">▲</button>
-                <button class="icon-btn" onclick="addIcon('diamond')" title="다이아">💎</button>
-            </div>
-        </div>
-
-        <div class="group">
-            <label>🔤 폰트 & 스타일</label>
-            <div class="item-grid" style="max-height: 200px;">
-                <button class="item-btn" style="font-family:'Noto Sans KR'; font-weight:400;" onclick="addText('Noto Sans KR', '기본 고딕')">기본 고딕</button>
-                <button class="item-btn" style="font-family:'Nanum Myeongjo'; font-weight:400;" onclick="addText('Nanum Myeongjo', '나눔 명조')">나눔 명조</button>
-                <button class="item-btn" style="font-family:'Do Hyeon'" onclick="addText('Do Hyeon', '도현체')">도현체</button>
-                <button class="item-btn" style="font-family:'Jua'" onclick="addText('Jua', '주아체')">주아체</button>
-                <button class="item-btn" style="font-family:'Yeon Sung'" onclick="addText('Yeon Sung', '연성체')">연성체</button>
-                <button class="item-btn" style="font-family:'Gugi'" onclick="addText('Gugi', '구기체')">구기체</button>
-                <button class="item-btn" style="font-family:'East Sea Dokdo'" onclick="addText('East Sea Dokdo', '동해 독도')">동해 독도</button>
-                <button class="item-btn" style="font-family:'Nanum Pen Script'" onclick="addText('Nanum Pen Script', '나눔 펜')">나눔 펜</button>
-                <button class="item-btn" style="font-family:'Gamja Flower'" onclick="addText('Gamja Flower', '감자꽃')">감자꽃</button>
-                <button class="item-btn" style="font-family:'Black Han Sans'" onclick="addText('Black Han Sans', '검은 고딕')">검은 고딕</button>
-                <button class="item-btn" style="font-family:'Playfair Display'" onclick="addText('Playfair Display', 'Playfair (영)')">Playfair (영)</button>
-                <button class="item-btn" style="font-family:'Montserrat'" onclick="addText('Montserrat', 'Montserrat (영)')">Montserrat (영)</button>
-                <button class="item-btn" style="font-family:'Pacifico'" onclick="addText('Pacifico', 'Pacifico (영)')">Pacifico (영)</button>
-                <button class="item-btn" style="font-family:'Dancing Script'" onclick="addText('Dancing Script', 'Dancing (영)')">Dancing (영)</button>
-            </div>
-            <div class="control-panel">
-                <span style="font-size:12px; font-weight:bold;">크기</span>
-                <input type="range" id="sizeRange" min="10" max="150" value="35" oninput="updateFontSize(this.value)">
-                <div id="sizeNum" class="size-display">35px</div>
-            </div>
-            <div class="control-panel">
-                <span style="font-size:12px; font-weight:bold; flex:1;">색상 (글자/아이콘)</span>
-                <input type="color" id="textColorPicker" value="#333333" oninput="changeTextColor(this.value)">
-            </div>
-        </div>
-        
-        <div class="group">
-            <label>📸 내 이미지 추가</label>
-            <div class="upload-area" onclick="document.getElementById('upload').click()">
-                📂 사진 불러오기
-                <input type="file" id="upload" accept="image/*" style="display:none">
-            </div>
-        </div>
-
-        <div class="group">
-            <label>📐 정렬 도구</label>
-            <div class="align-grid">
-                <button class="align-btn" onclick="alignObj('left')" title="왼쪽">⇤</button>
-                <button class="align-btn" onclick="alignObj('centerH')" title="가로 중앙">↔</button>
-                <button class="align-btn" onclick="alignObj('right')" title="오른쪽">⇥</button>
-                <button class="align-btn" onclick="alignObj('center')" title="정중앙" style="font-weight:bold; color:var(--duwell-wine);">✚</button>
-                <button class="align-btn" onclick="alignObj('centerV')" title="세로 중앙">↕</button>
-            </div>
-        </div>
-
-        <div class="group" style="border:none;">
-            <label>⚙️ 편집 도구</label>
-            <div class="layer-grid">
-                <button class="item-btn" onclick="changeLayer('bringToFront')" title="맨 위로">⏫</button>
-                <button class="item-btn" onclick="changeLayer('bringForward')" title="한 칸 위로">🔼</button>
-                <button class="item-btn" onclick="changeLayer('sendBackwards')" title="한 칸 아래로">🔽</button>
-                <button class="item-btn" onclick="changeLayer('sendToBack')" title="맨 아래로">⏬</button>
-                <button class="item-btn" style="color:red; border-color:red; font-weight:bold;" onclick="deleteObj()" title="삭제">❌</button>
-            </div>
-        </div>
-
-        <div class="guide-box" style="margin-top: 20px;">
-            <span class="step-title">1️⃣ 필수 파일 다운로드</span>
-            <p class="guide-text" id="downloadGuideText">작업 방식에 맞는 파일을 먼저 다운로드해주세요.</p>
-            
-            <div style="margin-top:5px; display:flex; gap:5px; flex-direction:column;">
-                <button class="action-btn btn-print" id="btnDlImage" onclick="exportPrint()">💾 디자인 이미지 다운로드</button>
-                <button class="action-btn btn-svg" id="btnDlSvg" onclick="exportSVG()">🧵 자수용 데이터 다운로드</button>
-            </div>
-
-            <span class="step-title" style="margin-top:20px;">2️⃣ 주문서 접수 (파일첨부 필수)</span>
-            <p class="guide-text">입력하신 주문 정보를 텍스트 파일로 저장하거나 복사하여 메일에 붙여넣어주세요.</p>
-            
-            <div style="margin-top:5px; display:flex; gap:5px; flex-direction:column;">
-                <button class="action-btn btn-txt" onclick="downloadOrderSheet()">📄 주문서(텍스트파일) 다운로드</button>
-                
-                <button class="action-btn btn-copy" onclick="copyOrderToClipboard()">📋 주문내용 복사하기</button>
-            </div>
-            
-            <p class="guide-alert" style="margin-top:10px;">
-                ※ <b>[주문서 파일]</b>과 <b>[디자인 파일]</b>을 모두 첨부하여<br>
-                <span style="color:black; background:#ffeb3b; padding:2px;">duwell2026@gmail.com</span> 으로 보내주세요.
-            </p>
-        </div>
+        <p class="preview-text">● <span id="modeText">전사 인쇄 (화이트 밴드)</span> 미리보기</p>
     </div>
 </div>
 
 <script>
-    const canvas = new fabric.Canvas('mainCanvas', { 
-        width: 866, height: 100, backgroundColor: '#ffffff', preserveObjectStacking: true 
-    });
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbyBCyLgcfEqTXTWmDeGcuw2ib2yDmSYEONpHGlLmZWZjKV17nUgD8CVjn12sQv-VnVF/exec'; 
 
-    let currentMode = 'print'; 
-    let currentTowelColor = '#ffffff';
+    const canvas = new fabric.Canvas('mainCanvas', { width: 866, height: 100, backgroundColor: '#ffffff', preserveObjectStacking: true });
+    let currentMode = 'print', currentTowelColor = '#ffffff', guide;
+    let currentPrice = 0, selectedProductName = "", packagingCost = 0;
+    let productData = [], packagingData = [];
+
+    if (navigator.userAgent.match(/KAKAOTALK/i)) {
+        document.getElementById('kakaotalk-banner').style.display = 'flex';
+    }
+
+    function copyCurrentLink() {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url).then(() => {
+            alert("주소가 복사되었습니다! \nSafari(사파리)나 Chrome(크롬)을 열고 붙여넣기 해주세요.");
+        }).catch(() => {
+            prompt("아래 주소를 복사해서 Safari에서 열어주세요:", url);
+        });
+    }
+
+    function showPopup(title, msg) {
+        document.getElementById('popupTitle').innerText = title;
+        document.getElementById('popupMsg').innerHTML = msg;
+        document.getElementById('customPopup').style.display = 'flex';
+    }
+    function closePopup() { document.getElementById('customPopup').style.display = 'none'; }
 
     const iconPaths = {
-        'heart': 'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z',
-        'star': 'M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z',
-        'crown': 'M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z',
-        'gift': 'M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1 1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1 1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z',
-        'music': 'M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z',
-        'camera': 'M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z',
-        'cross': 'M11 2v6H5v4h6v10h4V12h6V8h-6V2z',
-        'home': 'M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z',
-        'smile': 'M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z',
-        'check': 'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z',
-        'plane': 'M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z',
-        'car': 'M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z',
-        'thumbsup': 'M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-1.91l-.01-.01L23 10z',
-        'sun': 'M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1z',
-        'moon': 'M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z',
-        'cloud': 'M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z',
-        'circle': 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z',
-        'square': 'M3 3h18v18H3z',
-        'triangle': 'M12 2L2 22h20L12 2z',
-        'diamond': 'M19 3H5L2 9l10 12L22 9l-3-6z'
+        '하트': 'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z',
+        '별': 'M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z',
+        '왕관': 'M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z',
+        '스마일': 'M12 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z',
+        '체크': 'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z',
+        '자동차': 'M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99z',
+        '트로피': 'M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 10.63 21 8.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 2.82c-.84.42-1.68.58-2 .63V7h2v1z',
+        '비행기': 'M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z',
+        '카메라': 'M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9z',
+        '해': 'M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1z',
+        '달': 'M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z',
+        '구름': 'M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z',
+        '집': 'M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z',
+        '삼각형': 'M12 2L2 22h20L12 2z',
+        '원': 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z',
+        '사각형': 'M3 3h18v18H3z',
+        '십자가': 'M11 2v6H5v4h6v10h4V12h6V8h-6V2z',
+        '음표': 'M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z',
+        '다이아': 'M19 3H5L2 9l10 12L22 9l-3-6z',
+        '선물': 'M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2z'
     };
 
-    let guide;
-    function initGuide() {
+    async function fetchData() {
+        try {
+            const response = await fetch(scriptURL);
+            const data = await response.json();
+            productData = data.products;
+            packagingData = data.packaging;
+            init();
+            document.getElementById('loading').style.display = 'none';
+        } catch (error) {
+            showPopup("오류", "서버 연결에 실패했습니다.<br>새로고침 해주세요.");
+        }
+    }
+
+    function init() {
         guide = new fabric.Rect({ left: 5, top: 5, width: 856, height: 90, fill: 'transparent', stroke: '#800020', strokeDashArray: [4, 4], selectable: false, evented: false, opacity: 0.3 });
         canvas.add(guide);
-        canvas.sendToBack(guide);
+        
+        const ig = document.getElementById('icon-grid');
+        Object.keys(iconPaths).forEach(n => {
+            let b = document.createElement('button'); b.className='icon-btn'; b.onclick=()=>addIcon(n);
+            b.innerHTML = `<svg viewBox="0 0 24 24"><path d="${iconPaths[n]}"></path></svg><span>${n}</span>`;
+            ig.appendChild(b);
+        });
+
+        const fg = document.getElementById('font-grid');
+        ['Noto Sans KR', 'Nanum Myeongjo', 'Do Hyeon', 'Jua', 'Nanum Pen Script', 'Black Han Sans', 'Gugi', 'Yeon Sung', 'East Sea Dokdo', 'Gamja Flower', 'Poor Story', 'Gaegu', 'Sunflower', 'Song Myung', 'Stylish'].forEach(f => {
+            let b = document.createElement('button'); b.className='item-btn'; b.style.fontFamily=f; b.onclick=()=>addText(f, 'DUWELL'); b.innerText=f; fg.appendChild(b);
+        });
+
+        const ps = document.getElementById('productSelect');
+        ps.innerHTML = "";
+        productData.forEach((p, index) => {
+            let opt = document.createElement('option'); opt.value = index; opt.innerText = `${p.name} (${p.price.toLocaleString()}원)`; ps.appendChild(opt);
+        });
+
+        const packSel = document.getElementById('packagingSelect');
+        packSel.innerHTML = "";
+        packagingData.forEach((p, index) => {
+            let opt = document.createElement('option'); opt.value = index; opt.innerText = `${p.name} (${p.price.toLocaleString()}원)`; packSel.appendChild(opt);
+        });
+        
+        // 🚨 입력창을 클릭하면 캔버스 선택을 자동으로 풀어주는 기능 추가! (UX 개선)
+        const inputs = document.querySelectorAll('.input-field');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                canvas.discardActiveObject(); // 선택 해제
+                canvas.renderAll(); // 화면 갱신
+            });
+        });
+
+        changeProduct();
     }
-    initGuide();
 
-    function fitCanvasToScreen() {
-        const wrapper = document.getElementById('responsiveWrapper');
-        const screenWidth = window.innerWidth;
-        const towelWidth = 900; 
-        if (screenWidth < 920) {
-            const padding = 30; 
-            const availableWidth = screenWidth - padding;
-            const scaleRatio = availableWidth / towelWidth;
-            const finalScale = Math.min(scaleRatio, 1);
-            wrapper.style.transformOrigin = 'top center';
-            wrapper.style.transform = `scale(${finalScale})`;
-            wrapper.style.height = `${270 * finalScale}px`;
-        } else {
-            wrapper.style.transform = 'scale(1)';
-            wrapper.style.height = 'auto';
-        }
+    function changeProduct() {
+        if(productData.length === 0) return;
+        const index = document.getElementById('productSelect').value;
+        const product = productData[index];
+        currentPrice = product.price;
+        selectedProductName = product.name;
+        document.getElementById('unitPriceDisplay').innerText = currentPrice.toLocaleString();
+        calcPrice();
+        
+        const tg = document.getElementById('towel-grid');
+        tg.innerHTML = '';
+        product.colors.forEach((c, idx) => {
+            let d = document.createElement('div'); d.className='towel-option'; d.style.backgroundColor=c; d.onclick=()=>setTowel(c, d); tg.appendChild(d);
+            if(idx === 0) setTowel(c, d);
+        });
     }
-    window.addEventListener('load', fitCanvasToScreen);
-    window.addEventListener('resize', fitCanvasToScreen);
 
-    function setMode(mode) {
-        currentMode = mode;
-        const mockup = document.getElementById('towelMockup');
-        const modeText = document.getElementById('modeText');
-        const btnPrint = document.getElementById('btn-print');
-        const btnEmb = document.getElementById('btn-embroidery');
-        const embNotice = document.getElementById('emb-notice'); 
-        const guideText = document.getElementById('downloadGuideText');
-        const btnDlImage = document.getElementById('btnDlImage');
-        const btnDlSvg = document.getElementById('btnDlSvg');
+    function calcPrice() {
+        if(packagingData.length === 0) return;
+        const qty = document.getElementById('custQty').value;
+        const packIndex = document.getElementById('packagingSelect').value;
+        packagingCost = packagingData[packIndex].price;
+        const packInfo = document.getElementById('packPriceInfo'), packCostDisplay = document.getElementById('packCostDisplay');
+        if (packagingCost > 0) { packInfo.style.display = 'block'; packCostDisplay.innerText = packagingCost.toLocaleString(); } else { packInfo.style.display = 'none'; }
+        let total = 0; if (qty > 0) total = (currentPrice + packagingCost) * qty;
+        document.getElementById('displayPrice').innerText = total.toLocaleString() + "원";
+    }
 
-        if (mode === 'print') {
-            btnPrint.classList.add('active'); btnEmb.classList.remove('active');
-            mockup.className = 'mode-print';
-            modeText.innerText = '전사 인쇄 (화이트 밴드 고정)';
-            embNotice.style.display = 'none';
-            guideText.innerHTML = "전사 인쇄는 <b>[디자인 이미지]</b> 1개만 다운로드하면 됩니다.";
-            btnDlImage.style.display = 'block';
-            btnDlSvg.style.display = 'none'; 
-            canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
-        } else {
-            btnPrint.classList.remove('active'); btnEmb.classList.add('active');
-            mockup.className = 'mode-embroidery';
-            modeText.innerText = '컴퓨터 자수 (일반 수건형)';
-            embNotice.style.display = 'block';
-            guideText.innerHTML = "자수는 <b>[디자인 이미지]</b>와 <b>[자수용 데이터]</b> 2개 모두 필요합니다.";
-            btnDlImage.style.display = 'block';
-            btnDlSvg.style.display = 'block';
-            canvas.setBackgroundColor(null, canvas.renderAll.bind(canvas));
+    function setMode(m) {
+        currentMode = m;
+        const mock = document.getElementById('towelMockup'), txt = document.getElementById('modeText'), embBg = document.querySelector('.embroidery-bg'), btnP = document.getElementById('btn-p'), btnE = document.getElementById('btn-e'), warning = document.getElementById('embroideryWarning');
+        if(m === 'print') { 
+            mock.className='mode-print'; txt.innerText='전사 인쇄 (화이트 밴드)'; embBg.style.display='none'; canvas.backgroundColor='#ffffff'; 
+            btnP.style.background='var(--duwell-wine)'; btnP.style.color='white'; btnE.style.background='#fff'; btnE.style.color='#333'; warning.style.display = 'none';
+        } else { 
+            mock.className='mode-embroidery'; txt.innerText='컴퓨터 자수 (일반 수건)'; embBg.style.display='block'; canvas.backgroundColor=null; 
+            btnE.style.background='var(--duwell-wine)'; btnE.style.color='white'; btnP.style.background='#fff'; btnP.style.color='#333'; warning.style.display = 'block';
         }
         canvas.renderAll();
     }
-
-    function setTowel(color) {
-        currentTowelColor = color;
-        document.documentElement.style.setProperty('--towel-color', color);
-        if (currentMode === 'print') {
-            canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
-        } else {
-            canvas.setBackgroundColor(null, canvas.renderAll.bind(canvas));
-        }
-        document.querySelectorAll('.towel-option').forEach(el => el.classList.remove('active'));
-        event.target.classList.add('active');
-        canvas.renderAll();
-    }
-
-    function alignObj(pos) {
-        const obj = canvas.getActiveObject();
-        if (!obj) return;
-        switch(pos) {
-            case 'left': obj.set({ left: 10 }); break;
-            case 'right': obj.set({ left: canvas.width - (obj.getScaledWidth()) - 10 }); break;
-            case 'centerH': canvas.centerObjectH(obj); break;
-            case 'centerV': canvas.centerObjectV(obj); break;
-            case 'center': canvas.centerObject(obj); break;
-        }
-        obj.setCoords(); canvas.renderAll();
-    }
-
-    function addText(font, textStr) {
-        const color = document.getElementById('textColorPicker').value;
-        const text = new fabric.IText(textStr, { left: 150, top: 25, fontFamily: font, fontSize: 35, fill: color });
-        canvas.add(text);
-        canvas.centerObject(text);
-        canvas.setActiveObject(text);
-        syncUI(text);
-    }
-
-    function addIcon(iconName) {
-        const pathData = iconPaths[iconName];
-        if (!pathData) return;
-        const color = document.getElementById('textColorPicker').value;
-        const path = new fabric.Path(pathData, { fill: color, scaleX: 2, scaleY: 2, left: 100, top: 50 });
-        path.scaleToWidth(50); 
-        canvas.add(path);
-        canvas.centerObject(path);
-        canvas.setActiveObject(path);
-    }
-
-    function changeTextColor(color) {
-        const obj = canvas.getActiveObject();
-        if (obj) { obj.set('fill', color); canvas.renderAll(); }
-    }
-
-    function updateFontSize(val) {
-        document.getElementById('sizeNum').innerText = val + 'px';
-        const obj = canvas.getActiveObject();
-        if (obj) { 
-            if (obj.type === 'i-text') obj.set('fontSize', parseInt(val));
-            else if (obj.type === 'path') obj.scaleToWidth(parseInt(val)); 
-            canvas.renderAll(); 
-        }
-    }
-
-    canvas.on('selection:created', (e) => syncUI(e.selected[0]));
-    canvas.on('selection:updated', (e) => syncUI(e.selected[0]));
-    function syncUI(obj) {
-        if (obj) {
-            let size = 0;
-            if (obj.type === 'i-text') size = obj.fontSize;
-            else if (obj.type === 'path') size = obj.getScaledWidth();
-            document.getElementById('sizeRange').value = Math.round(size);
-            document.getElementById('sizeNum').innerText = Math.round(size) + 'px';
-            document.getElementById('textColorPicker').value = obj.fill;
-        }
-    }
-
-    function changeLayer(action) {
-        const obj = canvas.getActiveObject();
-        if(!obj) return;
-        switch(action) {
-            case 'bringToFront': obj.bringToFront(); break; 
-            case 'bringForward': obj.bringForward(); break; 
-            case 'sendBackwards': obj.sendBackwards(); break; 
-            case 'sendToBack': obj.sendToBack(); break; 
-        }
-        canvas.sendToBack(guide); 
-        canvas.renderAll();
-    }
-
-    function deleteObj() {
-        const activeObjects = canvas.getActiveObjects();
-        if (activeObjects.length) {
-            canvas.discardActiveObject();
-            activeObjects.forEach(obj => canvas.remove(obj));
-            canvas.renderAll();
-        }
-    }
-
+    function setTowel(c, el) { currentTowelColor = c; document.documentElement.style.setProperty('--towel-color', c); document.querySelectorAll('.towel-option').forEach(t=>t.classList.remove('active')); if(el) el.classList.add('active'); setMode(currentMode); }
+    function addText(f, t) { const it = new fabric.IText(t, { left: 100, top: 25, fontFamily: f, fontSize: 35, fill: document.getElementById('textColorPicker').value }); canvas.add(it).centerObject(it).setActiveObject(it); }
+    function addIcon(n) { const p = new fabric.Path(iconPaths[n], { fill: document.getElementById('textColorPicker').value, scaleX: 1.5, scaleY: 1.5 }); canvas.add(p).centerObject(p).setActiveObject(p); }
+    function changeTextColor(v) { const o = canvas.getActiveObject(); if (o) { o.set('fill', v); canvas.renderAll(); } }
+    function alignObj(type) { const o = canvas.getActiveObject(); if(!o) return; if(type === 'left') o.set({ left: 10 }); else if(type === 'right') o.set({ left: canvas.width - o.getScaledWidth() - 10 }); else if(type === 'centerH') canvas.centerObjectH(o); else if(type === 'centerFull') canvas.centerObject(o); o.setCoords(); canvas.renderAll(); }
+    function changeLayer(d) { const o = canvas.getActiveObject(); if(!o) return; if(d === 'front') o.bringForward(); else o.sendBackwards(); canvas.sendToBack(guide); canvas.renderAll(); }
+    function deleteObj() { canvas.getActiveObjects().forEach(o => canvas.remove(o)); canvas.discardActiveObject().renderAll(); }
+    
+    // 🚨 키보드 이벤트 수정: 입력창에 커서가 있으면 캔버스 삭제 동작 안 함
     window.addEventListener('keydown', (e) => {
-        const activeObj = canvas.getActiveObject();
-        if (activeObj && !activeObj.isEditing && (e.key === 'Delete' || e.key === 'Backspace')) {
+        // 입력창이나 텍스트박스에서 타이핑 중이면? -> 아무것도 하지 말고 리턴
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+        // 그게 아닐 때만 삭제 동작 수행
+        if((e.key==='Delete' || e.key==='Backspace') && canvas.getActiveObject() && !canvas.getActiveObject().isEditing) {
             deleteObj();
         }
     });
 
-    document.getElementById('upload').onchange = (e) => {
-        const reader = new FileReader();
-        reader.onload = (f) => {
-            fabric.Image.fromURL(f.target.result, (img) => {
-                img.scaleToHeight(80);
-                canvas.add(img);
-                canvas.centerObject(img);
-                canvas.setActiveObject(img);
-            });
-        };
-        reader.readAsDataURL(e.target.files[0]);
-    };
+    document.getElementById('upload').onchange = (e) => { const r = new FileReader(); r.onload = (f) => { fabric.Image.fromURL(f.target.result, (img) => { img.scaleToHeight(80); canvas.add(img).centerObject(img); }); }; r.readAsDataURL(e.target.files[0]); };
 
-    function exportPrint() {
-        guide.visible = false;
-        const originalBg = canvas.backgroundColor;
-        canvas.setBackgroundColor(null, canvas.renderAll.bind(canvas));
-        const link = document.createElement('a');
-        link.href = canvas.toDataURL({ format: 'png', multiplier: 6 });
-        link.download = `DUWELL_PRINT_${currentMode}_${Date.now()}.png`;
-        link.click();
-        if (currentMode === 'print') canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
-        else canvas.setBackgroundColor(null, canvas.renderAll.bind(canvas));
-        guide.visible = true;
-        canvas.renderAll();
+    async function sendDataToGoogleSheet() {
+        const name = document.getElementById('custName').value, phone = document.getElementById('custPhone').value, address = document.getElementById('custAddress').value, deliveryDate = document.getElementById('custDeliveryDate').value;
+        const qty = document.getElementById('custQty').value, totalPrice = document.getElementById('displayPrice').innerText;
+        const packIndex = document.getElementById('packagingSelect').value, packName = packagingData[packIndex].name;
+
+        if(!name || !phone || !address) { showPopup("알림", "성함, 연락처, 주소는 필수입니다!"); return; }
+
+        try {
+            guide.visible = false;
+            const imageData = canvas.toDataURL({ format: 'png', multiplier: 2, quality: 0.8 }); 
+            guide.visible = true; canvas.renderAll();
+
+            const orderData = { name, phone, address, deliveryDate, quantity: qty, totalPrice: totalPrice, productName: selectedProductName, packaging: packName, image: imageData };
+            
+            showPopup("주문 전송 중", "잠시만 기다려 주세요...<br>(약 3~5초 소요)");
+            
+            await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(orderData) });
+            showPopup("✅ 주문 완료!", "사장님께 주문서가 발송되었습니다.<br>확인 후 연락드리겠습니다.");
+        } catch(e) {
+            showPopup("전송 오류", "카카오톡에서는 오류가 날 수 있습니다.<br>상단의 <b>[주소 복사]</b>를 눌러<br>Safari에서 다시 시도해주세요!");
+        }
     }
 
-    function exportSVG() {
-        guide.visible = false;
-        const originalBg = canvas.backgroundColor;
-        canvas.setBackgroundColor(null, canvas.renderAll.bind(canvas));
-        const svgData = canvas.toSVG({ suppressPreamble: true, viewBox: { x: 0, y: 0, width: canvas.width, height: canvas.height } });
-        const link = document.createElement('a');
-        const blob = new Blob([svgData], {type: 'image/svg+xml'});
-        const url = URL.createObjectURL(blob);
-        link.href = url;
-        link.download = `DUWELL_EMBROIDERY_${Date.now()}.svg`;
-        link.click();
-        if (currentMode === 'print') canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
-        else canvas.setBackgroundColor(null, canvas.renderAll.bind(canvas));
-        guide.visible = true;
-        canvas.renderAll();
-    }
-
-    // ✨ 주문 정보 생성 함수 (공통)
-    function getOrderInfo() {
-        const name = document.getElementById('custName').value || '고객님';
-        const phone = document.getElementById('custPhone').value || '미입력';
-        const address = document.getElementById('custAddress').value || '미입력';
-        const deliveryDate = document.getElementById('custDeliveryDate').value || '미지정';
-        const eventDate = document.getElementById('custDate').value || '미정';
-        
-        return `[DUWELL 주문서]\n- 성함: ${name}\n- 연락처: ${phone}\n- 배송지: ${address}\n- 희망배송일: ${deliveryDate}\n- 행사날짜: ${eventDate}\n\n* 반드시 다운로드한 파일(이미지/자수파일)을 함께 첨부해주세요.`;
-    }
-
-    // 🔥 1. 주문서(텍스트파일) 다운로드
-    function downloadOrderSheet() {
-        const text = getOrderInfo();
-        const blob = new Blob([text], { type: 'text/plain' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `DUWELL_주문서_${document.getElementById('custName').value || '고객'}.txt`;
-        link.click();
-    }
-
-    // 🔥 2. 주문 내용 복사하기
-    function copyOrderToClipboard() {
-        const text = getOrderInfo();
-        navigator.clipboard.writeText(text).then(() => {
-            alert("✅ 주문 내용이 복사되었습니다!\n\n이제 사용하시는 메일(네이버, 다음 등)을 열어\n본문에 '붙여넣기(Ctrl+V)' 하시고 파일을 첨부해주세요.");
-        }).catch(err => {
-            alert("복사에 실패했습니다. 주문서를 다운로드해주세요.");
-        });
-    }
+    fetchData();
 </script>
 </body>
 </html>
