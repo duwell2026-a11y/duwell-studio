@@ -203,7 +203,7 @@
 
     async function fetchData() {
         try {
-            // 🚨 핵심 수정 1: ?nocache=... 추가하여 매번 새 데이터 불러오기
+            // 🚨 핵심 수정 1: ?nocache=... 추가하여 매번 새 데이터 불러오기 (가격 갱신 문제 해결)
             const response = await fetch(scriptURL + "?nocache=" + new Date().getTime());
             const data = await response.json();
             productData = data.products;
@@ -243,7 +243,7 @@
             let opt = document.createElement('option'); opt.value = index; opt.innerText = `${p.name} (${p.price.toLocaleString()}원)`; packSel.appendChild(opt);
         });
         
-        // 🚨 핵심 수정 2: 입력창 클릭 시 캔버스 선택 해제 (UX 개선)
+        // 🚨 핵심 수정 2: 입력창 클릭 시 캔버스 선택 해제 (박스 없어짐 문제 해결)
         const inputs = document.querySelectorAll('.input-field');
         inputs.forEach(input => {
             input.addEventListener('focus', () => {
