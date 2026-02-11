@@ -150,6 +150,7 @@
 </div>
 
 <script>
+    // 🔔 [주소 확인] 사장님의 GAS 주소가 맞는지 확인하세요!
     const scriptURL = 'https://script.google.com/macros/s/AKfycbyBCyLgcfEqTXTWmDeGcuw2ib2yDmSYEONpHGlLmZWZjKV17nUgD8CVjn12sQv-VnVF/exec'; 
 
     const canvas = new fabric.Canvas('mainCanvas', { width: 866, height: 100, backgroundColor: '#ffffff', preserveObjectStacking: true });
@@ -183,7 +184,7 @@
         '왕관': 'M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z',
         '스마일': 'M12 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z',
         '체크': 'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z',
-        '자동차': 'M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99z',
+        '자동차': 'M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99z',
         '트로피': 'M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 10.63 21 8.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 2.82c-.84.42-1.68.58-2 .63V7h2v1z',
         '비행기': 'M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z',
         '카메라': 'M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9z',
@@ -202,7 +203,8 @@
 
     async function fetchData() {
         try {
-           const response = await fetch(scriptURL + "?nocache=" + new Date().getTime());
+            // 🚨 핵심 수정 1: ?nocache=... 추가하여 매번 새 데이터 불러오기
+            const response = await fetch(scriptURL + "?nocache=" + new Date().getTime());
             const data = await response.json();
             productData = data.products;
             packagingData = data.packaging;
@@ -241,7 +243,7 @@
             let opt = document.createElement('option'); opt.value = index; opt.innerText = `${p.name} (${p.price.toLocaleString()}원)`; packSel.appendChild(opt);
         });
         
-        // 🚨 입력창을 클릭하면 캔버스 선택을 자동으로 풀어주는 기능 추가! (UX 개선)
+        // 🚨 핵심 수정 2: 입력창 클릭 시 캔버스 선택 해제 (UX 개선)
         const inputs = document.querySelectorAll('.input-field');
         inputs.forEach(input => {
             input.addEventListener('focus', () => {
@@ -301,9 +303,9 @@
     function changeLayer(d) { const o = canvas.getActiveObject(); if(!o) return; if(d === 'front') o.bringForward(); else o.sendBackwards(); canvas.sendToBack(guide); canvas.renderAll(); }
     function deleteObj() { canvas.getActiveObjects().forEach(o => canvas.remove(o)); canvas.discardActiveObject().renderAll(); }
     
-    // 🚨 키보드 이벤트 수정: 입력창에 커서가 있으면 캔버스 삭제 동작 안 함
+    // 🚨 핵심 수정 3: 키보드 입력 시 캔버스 삭제 방지 (안전장치)
     window.addEventListener('keydown', (e) => {
-        // 입력창이나 텍스트박스에서 타이핑 중이면? -> 아무것도 하지 말고 리턴
+        // 입력창이나 텍스트박스에서 타이핑 중이면 -> 아무것도 하지 말고 멈춤
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
         // 그게 아닐 때만 삭제 동작 수행
@@ -323,6 +325,7 @@
 
         try {
             guide.visible = false;
+            // 🚨 아이폰 메모리 최적화 (화질을 0.8로 약간 낮춰서 튕김 방지)
             const imageData = canvas.toDataURL({ format: 'png', multiplier: 2, quality: 0.8 }); 
             guide.visible = true; canvas.renderAll();
 
@@ -341,4 +344,3 @@
 </script>
 </body>
 </html>
-
