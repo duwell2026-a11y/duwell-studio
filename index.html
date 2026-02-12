@@ -639,18 +639,25 @@
         if(cropper) { cropper.destroy(); cropper = null; }
     }
 
-    function confirmCrop() {
-        if(!cropper) return;
-        const canvasData = cropper.getCroppedCanvas();
-        if(canvasData) {
-            const croppedDataUrl = canvasData.toDataURL();
-            fabric.Image.fromURL(croppedDataUrl, (img) => {
-                img.scaleToHeight(100); 
-                canvas.add(img).centerObject(img).setActiveObject(img);
-            });
-            cancelCrop(); // 닫기 및 초기화
-        }
+function confirmCrop() {
+    if(!cropper) return;
+
+    // 1. 크로퍼에서 이미지를 가져올 때 해상도를 강제로 높입니다.
+    const canvasData = cropper.getCroppedCanvas({
+        width: 1500, // 더 넉넉하게 1500픽셀로 설정 (화질 향상)
+        imageSmoothingQuality: 'high' // 최상의 부드러움 적용
+    });
+
+    if(canvasData) {
+        const croppedDataUrl = canvasData.toDataURL('image/png', 1.0); // 최고 품질 PNG 추출
+        fabric.Image.fromURL(croppedDataUrl, (img) => {
+            img.scaleToHeight(100); 
+            canvas.add(img).centerObject(img).setActiveObject(img);
+            canvas.renderAll(); // 캔버스 즉시 갱신
+        });
+        cancelCrop(); // 모달 닫기 및 초기화
     }
+}
 
     async function sendDataToGoogleSheet() {
         const name = document.getElementById('custName').value, phone = document.getElementById('custPhone').value, address = document.getElementById('custAddress').value, deliveryDate = document.getElementById('custDeliveryDate').value;
@@ -662,7 +669,7 @@
 
         try {
             guide.visible = false;
-            const imageData = canvas.toDataURL({ format: 'png', multiplier: 2, quality: 0.8 }); 
+            const imageData = canvas.toDataURL({ format: 'png', multiplier: 5, quality: 1.0 }); 
             guide.visible = true; canvas.renderAll();
 
             const orderData = { name, phone, address, deliveryDate, quantity: qty, totalPrice: totalPrice, productName: selectedProductName, packaging: packName, image: imageData };
