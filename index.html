@@ -3,180 +3,313 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DUWELL Studio</title>
+    <title>DUWELL Studio 3.6 (Mobile Fixed)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@100;300;400;500;700;900&family=Black+Han+Sans&family=Do+Hyeon&family=Jua&family=Nanum+Pen+Script&family=Gugi&family=Yeon+Sung&family=East+Sea+Dokdo&family=Gamja+Flower&family=Sunflower:wght@300;500;700&family=Gaegu&family=Poor+Story&family=Song+Myung&family=Stylish&display=swap" rel="stylesheet">
     <style>
-        :root { --duwell-wine: #800020; --towel-color: #ffffff; --towel-texture: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMiIvPgo8Y2lyY2xlIGN4PSIyIiBjeT0iMiIgcj0iMSIgZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIwLjEiLz4KPC9zdmc+'); }
+        :root { --duwell-wine: #800020; --sidebar-width: 380px; --towel-texture: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMiIvPgo8Y2lyY2xlIGN4PSIyIiBjeT0iMiIgcj0iMSIgZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIwLjEiLz4KPC9zdmc+'); }
         * { box-sizing: border-box; touch-action: manipulation; }
-        body { font-family: 'Noto Sans KR', sans-serif; background: #e0e4e8; margin: 0; display: flex; height: 100vh; overflow: hidden; }
-        .container { display: flex; width: 100%; height: 100%; }
         
-        #kakaotalk-banner {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; background: #fee500; 
-            color: #3c1e1e; padding: 12px; z-index: 20000; font-size: 13px; font-weight: bold;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2); align-items: center; justify-content: space-between;
+        body { 
+            font-family: 'Noto Sans KR', sans-serif; margin: 0; padding: 0; 
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); 
+            height: 100vh; overflow: hidden; display: flex; flex-direction: column; 
         }
-        #kakaotalk-banner button {
-            background: #3c1e1e; color: #fee500; border: none; padding: 5px 10px; 
-            border-radius: 4px; font-weight: bold; cursor: pointer; margin-left: 10px;
+        
+        /* 헤더 */
+        header { height: 60px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .brand { color: var(--duwell-wine); font-size: 20px; font-weight: 900; display: flex; align-items: center; gap: 10px; }
+        .header-actions { display: flex; align-items: center; gap: 15px; }
+        .price-tag { font-weight: bold; font-size: 16px; color: #333; }
+        .btn-order { background: var(--duwell-wine); color: white; padding: 8px 20px; border-radius: 6px; font-weight: bold; border: none; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 6px rgba(128,0,32,0.2); }
+        .btn-order:hover { transform: translateY(-2px); box-shadow: 0 6px 10px rgba(128,0,32,0.3); }
+
+        /* 메인 레이아웃 */
+        .main-container { display: flex; flex: 1; overflow: hidden; position: relative; }
+
+        /* 아코디언 사이드바 */
+        .sidebar { width: var(--sidebar-width); background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; z-index: 20; flex-shrink: 0; overflow-y: auto; }
+        
+        .accordion-item { border-bottom: 1px solid #eee; }
+        .accordion-header { 
+            width: 100%; padding: 18px 20px; background: white; border: none; outline: none; text-align: left; cursor: pointer; 
+            font-size: 16px; font-weight: 700; color: #333; display: flex; justify-content: space-between; align-items: center; transition: 0.2s;
         }
+        .accordion-header:hover { background: #f9f9f9; }
+        .accordion-header.active { background: #fff5f5; color: var(--duwell-wine); border-left: 4px solid var(--duwell-wine); padding-left: 16px; }
+        .accordion-header::after { content: '∨'; font-size: 12px; font-weight: bold; color: #999; transition: 0.2s; }
+        .accordion-header.active::after { transform: rotate(180deg); color: var(--duwell-wine); }
+        
+        .accordion-content { 
+            display: none; padding: 20px; background: #fafafa; border-top: 1px solid #f0f0f0; 
+            animation: slideDown 0.3s ease-out;
+        }
+        .accordion-content.show { display: block; }
 
-        #customPopup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10000; justify-content: center; align-items: center; }
-        .popup-content { background: white; padding: 25px; border-radius: 15px; width: 85%; max-width: 320px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
-        .popup-title { font-size: 18px; font-weight: 900; color: var(--duwell-wine); margin-bottom: 10px; }
-        .popup-msg { font-size: 14px; color: #555; margin-bottom: 20px; line-height: 1.5; }
-        .popup-btn { background: var(--duwell-wine); color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; cursor: pointer; width: 100%; font-size: 15px; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        #loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column; }
-        .loader { border: 5px solid #f3f3f3; border-top: 5px solid var(--duwell-wine); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-bottom: 20px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* 작업 영역 */
+        .workspace { flex: 1; position: relative; display: flex; flex-direction: column; background: #eef2f5; overflow: hidden; }
+        .toolbar { height: 50px; background: white; border-bottom: 1px solid #e0e0e0; display: flex; align-items: center; padding: 0 15px; gap: 10px; justify-content: center; }
+        .canvas-area { flex: 1; display: flex; align-items: center; justify-content: center; overflow: auto; padding: 40px; }
+        
+        /* UI 요소 */
+        .group-label { font-size: 13px; color: #666; font-weight: bold; margin-bottom: 8px; display: block; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .item-btn { border: 1px solid #ddd; background: white; padding: 10px; border-radius: 6px; cursor: pointer; text-align: center; font-size: 13px; transition: 0.1s; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 50px; }
+        .item-btn:hover { background: #fff; border-color: var(--duwell-wine); color: var(--duwell-wine); }
+        .item-btn.active { background: var(--duwell-wine); color: white; border-color: var(--duwell-wine); }
+        .item-btn svg { width: 28px; height: 28px; margin-bottom: 5px; fill: currentColor; }
+        .design-btn { height: 90px; padding: 5px; background-size: contain; background-repeat: no-repeat; background-position: center; border: 1px solid #eee; background-color: #fff; }
+        .color-circle { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #ddd; cursor: pointer; position: relative; margin-bottom: 5px; }
+        .color-circle.active { border-color: var(--duwell-wine); transform: scale(1.15); box-shadow: 0 0 0 2px rgba(128,0,32,0.2); }
+        .input-field { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; margin-bottom: 10px; }
+        .select-field { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; background: white; cursor: pointer; margin-bottom: 15px; }
+        .color-picker-box { width:100%; height:40px; cursor:pointer; border:1px solid #ddd; border-radius:5px; padding:2px; }
 
-        .sidebar { width: 420px; background: white; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; box-shadow: 4px 0 15px rgba(0,0,0,0.1); z-index: 10; }
-        .workspace { flex: 1; background-color: #d1d8e0; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .logo { color: var(--duwell-wine); font-size: 24px; font-weight: 900; text-align: center; border-bottom: 2px solid var(--duwell-wine); padding-bottom: 10px; margin: 0; }
-        .group { padding-bottom: 15px; border-bottom: 1px solid #eee; }
-        label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 14px; color: #333; }
-        .input-field { width: 100%; padding: 12px; margin-bottom: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
-        .action-btn { width: 100%; padding: 16px; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; font-size: 16px; background: var(--duwell-wine); color: white; margin-top: 5px; box-shadow: 0 4px 6px rgba(128,0,32,0.2); }
-        .towel-btn { flex: 1; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; font-size:14px; }
-        .item-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; max-height: 180px; overflow-y: auto; padding: 5px; background: #f9f9f9; border-radius: 8px; }
-        .item-btn { padding: 12px 10px; border: 1px solid #ddd; background: white; cursor: pointer; font-size: 13px; border-radius: 6px; text-align: center; }
-        .icon-btn { padding: 10px; border: 1px solid #eee; background: white; cursor: pointer; border-radius: 6px; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; }
-        .icon-btn svg { width: 28px; height: 28px; fill: #333; }
-        .photo-btn { background: #34495e; color: white; border: none; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; }
-        .product-select { width: 100%; padding: 14px; border: 2px solid var(--duwell-wine); border-radius: 8px; font-size: 14px; font-weight: bold; color: #333; cursor: pointer; background: #fff; }
-        .towel-option { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #ddd; cursor: pointer; background-image: var(--towel-texture); background-blend-mode: multiply; position: relative; }
-        .towel-option.active { border-color: var(--duwell-wine); transform: scale(1.15); border-width: 3px; z-index: 2; box-shadow: 0 0 10px rgba(0,0,0,0.2); }
-        .price-box { background: #fffafb; padding: 15px; border-radius: 8px; border: 2px solid var(--duwell-wine); text-align: right; margin-top: 10px; }
-        .price-total { font-size: 22px; font-weight: 900; color: var(--duwell-wine); margin-top: 5px; }
-        .price-info { font-size: 13px; color: #555; margin-bottom: 5px; font-weight: bold; }
-        .price-warning { color: #e74c3c; font-size: 11px; font-weight: bold; margin-top: 8px; display: none; background: #fff; padding: 5px; border-radius: 4px; border: 1px solid #ffcccc; text-align: center; }
-        .mockup-wrapper { width: 100%; display: flex; justify-content: center; align-items: center; }
-        #towelMockup { width: 900px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
+        /* 수건 목업 스타일 */
+        .mockup-wrapper { transform-origin: center center; transition: transform 0.2s; box-shadow: 0 20px 50px rgba(0,0,0,0.15); }
+        #towelMockup { width: 900px; display: flex; flex-direction: column; align-items: center; background: white; }
         .terry-texture { background-color: var(--towel-color); background-image: var(--towel-texture); background-blend-mode: multiply; }
         .towel-top { width: 100%; height: 70px; border-radius: 12px 12px 0 0; }
         .towel-bottom { width: 100%; height: 90px; border-radius: 0 0 12px 12px; }
         .canvas-band-wrapper { width: 100%; display: flex; justify-content: center; position: relative; }
-        .mode-print .canvas-band-wrapper { background: #ffffff; padding: 4px 0; box-shadow: inset 0 4px 6px rgba(0,0,0,0.1); }
+        .mode-print .canvas-band-wrapper { background: #ffffff; padding: 4px 0; }
         .mode-embroidery .embroidery-bg { display: block; position: absolute; top:0; left:0; width:100%; height:100%; }
-        .preview-text { margin-top: 20px; font-weight: bold; font-size: 15px; color: #333; background: rgba(255,255,255,0.7); padding: 5px 15px; border-radius: 20px; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
-
-        @media (max-width: 768px) {
-            body { display: block; overflow-y: auto; height: auto; }
-            .container { flex-direction: column-reverse; height: auto; display: flex; }
-            .workspace { position: sticky; top: 0; z-index: 90; height: 220px; padding-top: 40px; padding-bottom: 20px; border-bottom: 2px solid var(--duwell-wine); box-shadow: 0 5px 15px rgba(0,0,0,0.15); background-color: #d1d8e0; }
-            .preview-text { display: none; } 
-            .mockup-wrapper { transform: scale(0.38); transform-origin: top center; height: 100px; }
-            .sidebar { width: 100%; padding: 15px; box-shadow: none; z-index: 10; overflow-y: visible; }
-            .towel-option { width: 42px; height: 42px; }
-            .item-grid { grid-template-columns: repeat(3, 1fr); max-height: 220px; }
-            .action-btn { font-size: 18px; padding: 18px; }
-            #kakaotalk-banner { padding-top: env(safe-area-inset-top); } 
+        
+        .size-label {
+            position: absolute; top: -35px; left: 50%; transform: translateX(-50%);
+            background: rgba(128,0,32, 0.9); color: white; padding: 6px 15px; border-radius: 20px;
+            font-size: 13px; font-weight: bold; pointer-events: none; white-space: nowrap;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
+        .size-label::after {
+            content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%);
+            border-width: 5px; border-style: solid; border-color: rgba(128,0,32, 0.9) transparent transparent transparent;
+        }
+
+        /* 툴바 버튼 공통 */
+        .tool-btn { background: transparent; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px; display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 500; color: #444; }
+        .tool-btn:hover { background: #eee; }
+        .tool-btn.danger { color: #e74c3c; }
+
+        /* 팝업 및 로더 */
+        #customPopup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10000; justify-content: center; align-items: center; }
+        .popup-content { background: white; padding: 25px; border-radius: 15px; width: 300px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .popup-btn { background: var(--duwell-wine); color: white; border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; margin-top: 15px; width: 100%; }
+        #loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--duwell-wine); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* ==========================================================================
+           [반응형] 모바일 세로 모드 (Portrait) - 요청 사항 수정!
+           ========================================================================== */
+        @media (max-width: 768px) and (orientation: portrait) {
+            body { flex-direction: column; height: auto; overflow-y: auto; }
+            .main-container { flex-direction: column-reverse; height: auto; overflow: visible; }
+            .sidebar { width: 100%; height: auto; border-right: none; border-top: 2px solid var(--duwell-wine); }
+            
+            /* [Fix] 툴바 버튼 사이즈 축소 */
+            .toolbar { justify-content: space-between; padding: 0 5px; }
+            .tool-btn { 
+                font-size: 11px; /* 글씨 크기 줄임 */
+                padding: 6px 4px; /* 패딩 줄임 */
+                gap: 2px; 
+            }
+
+            /* [Fix] 캔버스 영역 고정 (흔들림 방지) */
+            .workspace { 
+                height: 350px; 
+                flex: none; 
+                border-bottom: 1px solid #ddd;
+            }
+            .canvas-area { 
+                padding: 0; 
+                overflow: hidden; /* 스크롤 방지 */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #eef2f5; 
+            }
+            .mockup-wrapper { 
+                transform: scale(0.32); /* 사이즈 조금 더 축소하여 안전하게 배치 */
+                margin: 0; /* 여백 제거 */
+                box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            }
+        }
+
+        /* ==========================================================================
+           [반응형] 모바일 가로 모드 (Landscape)
+           ========================================================================== */
+        @media (max-width: 920px) and (orientation: landscape) {
+            body { flex-direction: column; overflow: hidden; height: 100vh; }
+            .main-container { flex-direction: row; height: 100%; overflow: hidden; }
+            header { display: none; } 
+            .sidebar { width: 260px; height: 100%; border-right: 1px solid #ddd; border-top: none; }
+            .workspace { height: 100%; flex: 1; border-bottom: none; }
+            .mockup-wrapper { transform: scale(0.45); transform-origin: center center; }
+            .toolbar { overflow-x: auto; justify-content: flex-start; }
+            #mobileLandscapeOrderBtn { display: block !important; position: absolute; top: 10px; right: 10px; z-index: 500; }
+        }
+        
+        #mobileLandscapeOrderBtn { display: none; }
     </style>
 </head>
 <body>
 
-<div id="kakaotalk-banner">
-    ⚠️ 카카오톡에서는 오류가 날 수 있어요!
-    <button onclick="copyCurrentLink()">🔗 주소 복사 (Safari로 열기)</button>
+<div id="loading">
+    <div class="loader"></div>
+    <h3 style="color:var(--duwell-wine);">DUWELL STUDIO</h3>
+    <p style="font-size:13px; color:#666;">디자인 도구 초기화 중...</p>
 </div>
+
+<button id="mobileLandscapeOrderBtn" class="btn-order" onclick="openAccordion('checkout')">주문하기</button>
 
 <div id="customPopup">
     <div class="popup-content">
-        <div class="popup-title" id="popupTitle">알림</div>
-        <div class="popup-msg" id="popupMsg">내용</div>
+        <h3 id="popupTitle" style="color:var(--duwell-wine); margin:0 0 10px 0;">알림</h3>
+        <p id="popupMsg" style="font-size:14px; color:#555; line-height:1.5;">내용</p>
         <button class="popup-btn" onclick="closePopup()">확인</button>
     </div>
 </div>
 
-<div id="loading">
-    <div class="loader"></div>
-    <h3 style="color:var(--duwell-wine);">DUWELL STUDIO</h3>
-    <p style="font-size:14px; color:#555;">최신 가격 정보를 불러오고 있습니다...</p>
-</div>
+<header>
+    <div class="brand">
+        <svg viewBox="0 0 24 24" style="width:24px; height:24px; fill:#333; cursor:pointer;" onclick="alert('DUWELL Studio 3.6')"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+        <span>DUWELL STUDIO</span>
+    </div>
+    <div class="header-actions">
+        <div class="price-tag">총 <span id="headerPrice">0</span>원</div>
+        <button class="btn-order" onclick="openAccordion('checkout')">주문하기</button>
+    </div>
+</header>
 
-<div class="container">
+<div class="main-container">
     <div class="sidebar">
-        <h1 class="logo">DUWELL STUDIO</h1>
-        
-        <div class="group"><label>1️⃣ 제품 선택 (라인업)</label><select id="productSelect" class="product-select" onchange="changeProduct()"></select></div>
-        <div class="group"><label>2️⃣ 색상 선택</label><div id="towel-grid" style="display:flex; flex-wrap:wrap; gap:10px;"></div></div>
-        <div class="group"><label>🛠️ 제작 방식</label><div style="display:flex; gap:10px; background:#f0f0f0; padding:5px; border-radius:10px;"><button id="btn-p" class="towel-btn" onclick="setMode('print')">🖨️ 전사</button><button id="btn-e" class="towel-btn" onclick="setMode('embroidery')">🧵 자수</button></div></div>
-        <div class="group"><label>🎁 포장 옵션 선택</label><select id="packagingSelect" class="product-select" onchange="calcPrice()"></select></div>
-        <div class="group"><label>📸 내 사진/로고 넣기</label><button class="photo-btn" onclick="document.getElementById('upload').click()">📂 갤러리에서 불러오기</button><input type="file" id="upload" accept="image/*" style="display:none"></div>
-        
-        <div class="group"><label>✨ 심볼 아이콘 (20종)</label><div id="icon-grid" style="display:grid; grid-template-columns: repeat(4, 1fr); gap:5px; max-height: 180px; overflow-y:auto; padding:2px;"></div></div>
-        <div class="group"><label>🔤 폰트 & 컬러</label><div id="font-grid" class="item-grid"></div><input type="color" id="textColorPicker" value="#333333" oninput="changeTextColor(this.value)" style="width:100%; height:45px; border:none; margin-top:10px; cursor:pointer; border-radius:5px;"></div>
-        
-        <div class="group"><label>📐 편집 도구</label><div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:6px;"><button class="item-btn" onclick="alignObj('left')">좌측</button><button class="item-btn" onclick="alignObj('centerH')">가운데</button><button class="item-btn" onclick="alignObj('right')">우측</button><button class="item-btn" onclick="alignObj('centerFull')" style="color:var(--duwell-wine); font-weight:bold;">정중앙</button><button class="item-btn" onclick="changeLayer('front')">앞으로</button><button class="item-btn" onclick="changeLayer('back')">뒤로</button><button class="item-btn" style="color:red; grid-column: span 3; font-weight:bold;" onclick="deleteObj()">선택 삭제 (Del)</button></div></div>
-
-        <div class="group" style="background:#fffafb; border: 2px solid var(--duwell-wine); border-radius:10px; padding:15px; margin-top:20px;">
-            <label style="color:var(--duwell-wine); font-size:16px;">📝 최종 주문서 작성</label>
-            <input type="text" id="custName" placeholder="성함 (필수)" class="input-field">
-            <input type="tel" id="custPhone" placeholder="연락처 (필수)" class="input-field">
-            <input type="text" id="custAddress" placeholder="배송지 주소 (필수)" class="input-field">
-            <label style="font-size:12px; margin-top:5px;">📅 희망 수령일</label>
-            <input type="date" id="custDeliveryDate" class="input-field">
-            <hr style="margin: 15px 0; border:0; border-top:1px dashed #ddd;">
-            <label style="color:#333;">📦 수량 입력 (장)</label>
-            <input type="number" id="custQty" placeholder="0" class="input-field" style="font-weight:bold; font-size:16px;" oninput="calcPrice()">
-            <div class="price-box">
-                <div class="price-info">수건 단가: <span id="unitPriceDisplay">0</span>원</div>
-                <div class="price-info" id="packPriceInfo" style="display:none; color:#2980b9;">+ 포장비: <span id="packCostDisplay">0</span>원</div>
-                <div id="displayPrice" class="price-total">0원</div>
-                <div id="embroideryWarning" class="price-warning">※ 자수는 도안 침수(복잡도)에 따라<br>최종 금액이 변동될 수 있습니다.</div>
-            </div>
-            <button class="action-btn" onclick="sendDataToGoogleSheet()">주문 전송하기</button>
-        </div>
-    </div>
-
-    <div class="workspace">
-        <div class="mockup-wrapper">
-            <div id="towelMockup" class="mode-print">
-                <div class="towel-body towel-top terry-texture"></div>
-                <div class="band-container" style="width:100%; position:relative; z-index:1;">
-                    <div class="embroidery-bg terry-texture" style="display:none;"></div>
-                    <div class="canvas-band-wrapper"><canvas id="mainCanvas"></canvas></div>
+        <div class="accordion-item">
+            <button class="accordion-header active" onclick="toggleAccordion('product', this)">1. 제품 및 제작 방식 선택</button>
+            <div id="acc-product" class="accordion-content show">
+                <label class="group-label">제품 라인업</label>
+                <select id="productSelect" class="select-field" onchange="changeProduct()"></select>
+                <label class="group-label">제작 방식</label>
+                <div class="grid-2">
+                    <button id="btn-p" class="item-btn" onclick="setMode('print')"><span style="font-size:18px;">🖨️</span> 전사 인쇄</button>
+                    <button id="btn-e" class="item-btn" onclick="setMode('embroidery')"><span style="font-size:18px;">🧵</span> 컴퓨터 자수</button>
                 </div>
-                <div class="towel-body towel-bottom terry-texture"></div>
+                <div id="embroideryWarning" style="font-size:11px; color:#e74c3c; display:none; background:#fff0f0; padding:10px; border-radius:4px;">※ 자수는 도안 침수(복잡도)에 따라 추가 비용이 발생할 수 있습니다.</div>
             </div>
         </div>
-        <p class="preview-text">● <span id="modeText">전사 인쇄 (화이트 밴드)</span> 미리보기</p>
+
+        <div class="accordion-item">
+            <button class="accordion-header" onclick="toggleAccordion('color', this)">2. 수건 색상 변경</button>
+            <div id="acc-color" class="accordion-content">
+                <label class="group-label">베이스 컬러 선택</label>
+                <div id="towel-grid" style="display:flex; flex-wrap:wrap; gap:12px;"></div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <button class="accordion-header" onclick="toggleAccordion('design', this)">3. 추천 디자인 (로고/샘플)</button>
+            <div id="acc-design" class="accordion-content">
+                <div id="design-grid" class="grid-2"></div>
+                <p style="font-size:12px; color:#888;">원하는 디자인을 클릭하여 적용하세요.</p>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <button class="accordion-header" onclick="toggleAccordion('text', this)">4. 텍스트(문구) 넣기</button>
+            <div id="acc-text" class="accordion-content">
+                <label class="group-label">폰트 선택 (15종)</label>
+                <div id="font-grid" style="display:flex; flex-direction:column; gap:8px; max-height:300px; overflow-y:auto;"></div>
+                <div style="margin-top:15px;">
+                    <label class="group-label">글자 색상</label>
+                    <input type="color" id="textColorPicker" value="#333333" oninput="changeObjColor(this.value)" class="color-picker-box">
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <button class="accordion-header" onclick="toggleAccordion('icon', this)">5. 아이콘 꾸미기</button>
+            <div id="acc-icon" class="accordion-content">
+                <label class="group-label">아이콘 선택 (20종)</label>
+                <div id="icon-grid" class="grid-3" style="max-height:300px; overflow-y:auto;"></div>
+                <div style="margin-top:15px; border-top:1px dashed #ddd; padding-top:15px;">
+                    <label class="group-label">🎨 아이콘 색상 변경</label>
+                    <input type="color" id="iconColorPicker" value="#333333" oninput="changeObjColor(this.value)" class="color-picker-box">
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <button class="accordion-header" onclick="toggleAccordion('upload', this)">6. 내 이미지 업로드</button>
+            <div id="acc-upload" class="accordion-content">
+                <button class="item-btn" onclick="document.getElementById('upload').click()" style="width:100%; border:2px dashed #ddd; background:#fafafa;">📂 내 기기에서 사진 찾기</button>
+                <input type="file" id="upload" accept="image/*" style="display:none">
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <button class="accordion-header" onclick="toggleAccordion('checkout', this)" style="color:var(--duwell-wine);">7. 최종 주문서 작성</button>
+            <div id="acc-checkout" class="accordion-content">
+                <label class="group-label">주문자 정보</label>
+                <input type="text" id="custName" placeholder="성함" class="input-field">
+                <input type="tel" id="custPhone" placeholder="연락처" class="input-field">
+                <input type="text" id="custAddress" placeholder="주소" class="input-field">
+                <input type="date" id="custDeliveryDate" class="input-field">
+                <hr style="border:0; border-top:1px dashed #ddd; margin:15px 0;">
+                <label class="group-label">포장 옵션</label>
+                <select id="packagingSelect" class="select-field" onchange="calcPrice()"></select>
+                <label class="group-label">수량 (장)</label>
+                <input type="number" id="custQty" placeholder="0" class="input-field" style="font-weight:bold; font-size:18px; color:var(--duwell-wine);" oninput="calcPrice()">
+                <div style="text-align:right; font-weight:bold; font-size:20px; color:var(--duwell-wine); margin:15px 0;">예상 금액: <span id="displayPriceCheckout">0원</span></div>
+                <button class="btn-order" onclick="sendDataToGoogleSheet()" style="width:100%; padding:15px; font-size:16px;">주문 전송하기</button>
+            </div>
+        </div>
     </div>
+
+    <main class="workspace">
+        <div class="toolbar">
+            <button class="tool-btn" onclick="alignObj('left')">⏪ 좌측</button>
+            <button class="tool-btn" onclick="alignObj('centerH')">↔ 중앙</button>
+            <button class="tool-btn" onclick="alignObj('right')">⏩ 우측</button>
+            <div style="width:1px; height:20px; background:#ddd; margin:0 5px;"></div>
+            <button class="tool-btn" onclick="changeLayer('front')">🔼 위로</button>
+            <button class="tool-btn" onclick="changeLayer('back')">🔽 아래로</button>
+            <div style="width:1px; height:20px; background:#ddd; margin:0 5px;"></div>
+            <button class="tool-btn danger" onclick="deleteObj()">🗑 삭제</button>
+        </div>
+
+        <div class="canvas-area">
+            <div class="mockup-wrapper">
+                <div id="towelMockup" class="mode-print">
+                    <div class="towel-body towel-top terry-texture"></div>
+                    <div class="band-container" style="width:100%; position:relative; z-index:1;">
+                        <div class="embroidery-bg terry-texture" style="display:none;"></div>
+                        <div class="size-label">📏 인쇄 가능 영역: 38cm x 4.5cm</div>
+                        <div class="canvas-band-wrapper"><canvas id="mainCanvas"></canvas></div>
+                    </div>
+                    <div class="towel-body towel-bottom terry-texture"></div>
+                </div>
+                <p id="modeText" style="text-align:center; margin-top:20px; color:#888; font-size:14px;">● 전사 인쇄 모드</p>
+            </div>
+        </div>
+    </main>
 </div>
 
 <script>
-    // 🔔 [주소 확인] 사장님의 GAS 주소가 맞는지 확인하세요!
     const scriptURL = 'https://script.google.com/macros/s/AKfycbyBCyLgcfEqTXTWmDeGcuw2ib2yDmSYEONpHGlLmZWZjKV17nUgD8CVjn12sQv-VnVF/exec'; 
 
     const canvas = new fabric.Canvas('mainCanvas', { width: 866, height: 100, backgroundColor: '#ffffff', preserveObjectStacking: true });
+    
+    fabric.Object.prototype.set({
+        transparentCorners: false, cornerColor: '#ffffff', cornerStrokeColor: '#800020',
+        borderColor: '#800020', cornerSize: 12, padding: 10, cornerStyle: 'circle', borderDashArray: [4, 4]
+    });
+
     let currentMode = 'print', currentTowelColor = '#ffffff', guide;
     let currentPrice = 0, selectedProductName = "", packagingCost = 0;
     let productData = [], packagingData = [];
-
-    if (navigator.userAgent.match(/KAKAOTALK/i)) {
-        document.getElementById('kakaotalk-banner').style.display = 'flex';
-    }
-
-    function copyCurrentLink() {
-        const url = window.location.href;
-        navigator.clipboard.writeText(url).then(() => {
-            alert("주소가 복사되었습니다! \nSafari(사파리)나 Chrome(크롬)을 열고 붙여넣기 해주세요.");
-        }).catch(() => {
-            prompt("아래 주소를 복사해서 Safari에서 열어주세요:", url);
-        });
-    }
-
-    function showPopup(title, msg) {
-        document.getElementById('popupTitle').innerText = title;
-        document.getElementById('popupMsg').innerHTML = msg;
-        document.getElementById('customPopup').style.display = 'flex';
-    }
-    function closePopup() { document.getElementById('customPopup').style.display = 'none'; }
 
     const iconPaths = {
         '하트': 'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z',
@@ -184,7 +317,7 @@
         '왕관': 'M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z',
         '스마일': 'M12 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z',
         '체크': 'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z',
-        '자동차': 'M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99z',
+        '자동차': 'M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99z',
         '트로피': 'M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 10.63 21 8.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 2.82c-.84.42-1.68.58-2 .63V7h2v1z',
         '비행기': 'M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z',
         '카메라': 'M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9z',
@@ -201,10 +334,46 @@
         '선물': 'M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2z'
     };
 
+    function toggleAccordion(id, btnElement) {
+        const content = document.getElementById('acc-' + id);
+        const isOpen = content.classList.contains('show');
+        document.querySelectorAll('.accordion-content').forEach(el => el.classList.remove('show'));
+        document.querySelectorAll('.accordion-header').forEach(el => el.classList.remove('active'));
+        if (!isOpen) {
+            content.classList.add('show');
+            if(btnElement) btnElement.classList.add('active');
+        }
+    }
+
+    function openAccordion(id) {
+        const content = document.getElementById('acc-' + id);
+        const header = content.previousElementSibling;
+        document.querySelectorAll('.accordion-content').forEach(el => el.classList.remove('show'));
+        document.querySelectorAll('.accordion-header').forEach(el => el.classList.remove('active'));
+        content.classList.add('show');
+        header.classList.add('active');
+        header.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    const recommendedDesigns = [
+        { name: '감사', url: 'https://via.placeholder.com/200/800020/FFFFFF?text=Thank+You' },
+        { name: '생일', url: 'https://via.placeholder.com/200/e67e22/FFFFFF?text=Happy+B-Day' },
+        { name: '웨딩', url: 'https://via.placeholder.com/200/e91e63/FFFFFF?text=Wedding' },
+        { name: '첫돌', url: 'https://via.placeholder.com/200/3498db/FFFFFF?text=1st+B-Day' },
+        { name: '로고', url: 'https://via.placeholder.com/200/2ecc71/FFFFFF?text=Logo' },
+        { name: '기타', url: 'https://via.placeholder.com/200/333333/FFFFFF?text=Etc' }
+    ];
+
+    function showPopup(title, msg) {
+        document.getElementById('popupTitle').innerText = title;
+        document.getElementById('popupMsg').innerHTML = msg;
+        document.getElementById('customPopup').style.display = 'flex';
+    }
+    function closePopup() { document.getElementById('customPopup').style.display = 'none'; }
+
     async function fetchData() {
         try {
-            // 🚨 핵심 수정 1: ?nocache=... 추가하여 매번 새 데이터 불러오기 (가격 갱신 문제 해결)
-            const response = await fetch(scriptURL + "?nocache=" + new Date().getTime());
+            const response = await fetch(scriptURL);
             const data = await response.json();
             productData = data.products;
             packagingData = data.packaging;
@@ -221,14 +390,27 @@
         
         const ig = document.getElementById('icon-grid');
         Object.keys(iconPaths).forEach(n => {
-            let b = document.createElement('button'); b.className='icon-btn'; b.onclick=()=>addIcon(n);
+            let b = document.createElement('button'); b.className='item-btn'; b.onclick=()=>addIcon(n);
             b.innerHTML = `<svg viewBox="0 0 24 24"><path d="${iconPaths[n]}"></path></svg><span>${n}</span>`;
             ig.appendChild(b);
         });
 
         const fg = document.getElementById('font-grid');
         ['Noto Sans KR', 'Nanum Myeongjo', 'Do Hyeon', 'Jua', 'Nanum Pen Script', 'Black Han Sans', 'Gugi', 'Yeon Sung', 'East Sea Dokdo', 'Gamja Flower', 'Poor Story', 'Gaegu', 'Sunflower', 'Song Myung', 'Stylish'].forEach(f => {
-            let b = document.createElement('button'); b.className='item-btn'; b.style.fontFamily=f; b.onclick=()=>addText(f, 'DUWELL'); b.innerText=f; fg.appendChild(b);
+            let b = document.createElement('button'); b.className='item-btn'; b.style.fontFamily=f; b.onclick=()=>addText(f, 'DUWELL'); 
+            b.style.flexDirection = 'row'; b.style.justifyContent='space-between'; b.style.padding='15px';
+            b.innerHTML = `<span style="font-size:16px;">${f}</span><span style="font-size:12px; color:#aaa;">가나다</span>`;
+            fg.appendChild(b);
+        });
+
+        const dg = document.getElementById('design-grid');
+        recommendedDesigns.forEach(d => {
+            let b = document.createElement('button');
+            b.className = 'item-btn design-btn';
+            b.style.backgroundImage = `url('${d.url}')`;
+            b.onclick = () => addDesignImage(d.url);
+            b.innerHTML = `<span style="background:rgba(255,255,255,0.8); padding:2px 5px; border-radius:4px; font-size:11px; margin-top:auto;">${d.name}</span>`;
+            dg.appendChild(b);
         });
 
         const ps = document.getElementById('productSelect');
@@ -243,13 +425,8 @@
             let opt = document.createElement('option'); opt.value = index; opt.innerText = `${p.name} (${p.price.toLocaleString()}원)`; packSel.appendChild(opt);
         });
         
-        // 🚨 핵심 수정 2: 입력창 클릭 시 캔버스 선택 해제 (박스 없어짐 문제 해결)
-        const inputs = document.querySelectorAll('.input-field');
-        inputs.forEach(input => {
-            input.addEventListener('focus', () => {
-                canvas.discardActiveObject(); // 선택 해제
-                canvas.renderAll(); // 화면 갱신
-            });
+        document.querySelectorAll('.input-field').forEach(input => {
+            input.addEventListener('focus', () => { canvas.discardActiveObject(); canvas.renderAll(); });
         });
 
         changeProduct();
@@ -261,13 +438,12 @@
         const product = productData[index];
         currentPrice = product.price;
         selectedProductName = product.name;
-        document.getElementById('unitPriceDisplay').innerText = currentPrice.toLocaleString();
         calcPrice();
         
         const tg = document.getElementById('towel-grid');
         tg.innerHTML = '';
         product.colors.forEach((c, idx) => {
-            let d = document.createElement('div'); d.className='towel-option'; d.style.backgroundColor=c; d.onclick=()=>setTowel(c, d); tg.appendChild(d);
+            let d = document.createElement('div'); d.className='color-circle'; d.style.backgroundColor=c; d.onclick=()=>setTowel(c, d); tg.appendChild(d);
             if(idx === 0) setTowel(c, d);
         });
     }
@@ -277,66 +453,128 @@
         const qty = document.getElementById('custQty').value;
         const packIndex = document.getElementById('packagingSelect').value;
         packagingCost = packagingData[packIndex].price;
-        const packInfo = document.getElementById('packPriceInfo'), packCostDisplay = document.getElementById('packCostDisplay');
-        if (packagingCost > 0) { packInfo.style.display = 'block'; packCostDisplay.innerText = packagingCost.toLocaleString(); } else { packInfo.style.display = 'none'; }
         let total = 0; if (qty > 0) total = (currentPrice + packagingCost) * qty;
-        document.getElementById('displayPrice').innerText = total.toLocaleString() + "원";
+        
+        const priceStr = total.toLocaleString();
+        document.getElementById('headerPrice').innerText = priceStr;
+        document.getElementById('displayPriceCheckout').innerText = priceStr + "원";
     }
 
     function setMode(m) {
         currentMode = m;
         const mock = document.getElementById('towelMockup'), txt = document.getElementById('modeText'), embBg = document.querySelector('.embroidery-bg'), btnP = document.getElementById('btn-p'), btnE = document.getElementById('btn-e'), warning = document.getElementById('embroideryWarning');
+        
         if(m === 'print') { 
-            mock.className='mode-print'; txt.innerText='전사 인쇄 (화이트 밴드)'; embBg.style.display='none'; canvas.backgroundColor='#ffffff'; 
-            btnP.style.background='var(--duwell-wine)'; btnP.style.color='white'; btnE.style.background='#fff'; btnE.style.color='#333'; warning.style.display = 'none';
+            mock.className='mode-print'; txt.innerText='● 전사 인쇄 (화이트 밴드) 미리보기'; embBg.style.display='none'; canvas.backgroundColor='#ffffff'; 
+            btnP.classList.add('active'); btnE.classList.remove('active');
+            warning.style.display = 'none';
         } else { 
-            mock.className='mode-embroidery'; txt.innerText='컴퓨터 자수 (일반 수건)'; embBg.style.display='block'; canvas.backgroundColor=null; 
-            btnE.style.background='var(--duwell-wine)'; btnE.style.color='white'; btnP.style.background='#fff'; btnP.style.color='#333'; warning.style.display = 'block';
+            mock.className='mode-embroidery'; txt.innerText='● 컴퓨터 자수 (일반 수건) 미리보기'; embBg.style.display='block'; canvas.backgroundColor=null; 
+            btnE.classList.add('active'); btnP.classList.remove('active');
+            warning.style.display = 'block';
         }
         canvas.renderAll();
     }
-    function setTowel(c, el) { currentTowelColor = c; document.documentElement.style.setProperty('--towel-color', c); document.querySelectorAll('.towel-option').forEach(t=>t.classList.remove('active')); if(el) el.classList.add('active'); setMode(currentMode); }
-    function addText(f, t) { const it = new fabric.IText(t, { left: 100, top: 25, fontFamily: f, fontSize: 35, fill: document.getElementById('textColorPicker').value }); canvas.add(it).centerObject(it).setActiveObject(it); }
-    function addIcon(n) { const p = new fabric.Path(iconPaths[n], { fill: document.getElementById('textColorPicker').value, scaleX: 1.5, scaleY: 1.5 }); canvas.add(p).centerObject(p).setActiveObject(p); }
-    function changeTextColor(v) { const o = canvas.getActiveObject(); if (o) { o.set('fill', v); canvas.renderAll(); } }
+    
+    function setTowel(c, el) { 
+        currentTowelColor = c; 
+        document.documentElement.style.setProperty('--towel-color', c); 
+        document.querySelectorAll('.color-circle').forEach(t=>t.classList.remove('active')); 
+        if(el) el.classList.add('active'); 
+        setMode(currentMode); 
+    }
+    
+    function changeObjColor(v) { 
+        const o = canvas.getActiveObject(); 
+        if (o) { 
+            o.set('fill', v); 
+            if(o.paths) { o.paths.forEach(p => p.set({ fill: v })); }
+            canvas.renderAll(); 
+            document.getElementById('textColorPicker').value = v;
+            document.getElementById('iconColorPicker').value = v;
+        } 
+    }
+
+    function addText(f, t) { 
+        const it = new fabric.IText(t, { left: 100, top: 25, fontFamily: f, fontSize: 35, fill: document.getElementById('textColorPicker').value }); 
+        canvas.add(it).centerObject(it).setActiveObject(it); 
+    }
+    function addIcon(n) { 
+        const p = new fabric.Path(iconPaths[n], { fill: document.getElementById('iconColorPicker').value, scaleX: 1.5, scaleY: 1.5 }); 
+        canvas.add(p).centerObject(p).setActiveObject(p); 
+    }
+    
+    function addDesignImage(url) {
+        fabric.Image.fromURL(url, (img) => {
+            img.scaleToHeight(80); 
+            canvas.add(img).centerObject(img).setActiveObject(img);
+        }, { crossOrigin: 'anonymous' });
+    }
+
     function alignObj(type) { const o = canvas.getActiveObject(); if(!o) return; if(type === 'left') o.set({ left: 10 }); else if(type === 'right') o.set({ left: canvas.width - o.getScaledWidth() - 10 }); else if(type === 'centerH') canvas.centerObjectH(o); else if(type === 'centerFull') canvas.centerObject(o); o.setCoords(); canvas.renderAll(); }
     function changeLayer(d) { const o = canvas.getActiveObject(); if(!o) return; if(d === 'front') o.bringForward(); else o.sendBackwards(); canvas.sendToBack(guide); canvas.renderAll(); }
     function deleteObj() { canvas.getActiveObjects().forEach(o => canvas.remove(o)); canvas.discardActiveObject().renderAll(); }
     
-    // 🚨 핵심 수정 3: 키보드 입력 시 캔버스 삭제 방지 (안전장치)
     window.addEventListener('keydown', (e) => {
-        // 입력창이나 텍스트박스에서 타이핑 중이면 -> 아무것도 하지 말고 멈춤
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
-        // 그게 아닐 때만 삭제 동작 수행
-        if((e.key==='Delete' || e.key==='Backspace') && canvas.getActiveObject() && !canvas.getActiveObject().isEditing) {
-            deleteObj();
+        const activeObj = canvas.getActiveObject();
+        if (activeObj) {
+            const step = e.shiftKey ? 10 : 1; 
+            let moved = false;
+
+            switch (e.key) {
+                case 'ArrowUp': activeObj.top -= step; moved = true; break;
+                case 'ArrowDown': activeObj.top += step; moved = true; break;
+                case 'ArrowLeft': activeObj.left -= step; moved = true; break;
+                case 'ArrowRight': activeObj.left += step; moved = true; break;
+                case 'Delete': 
+                case 'Backspace': 
+                    if (!activeObj.isEditing) { deleteObj(); moved = true; }
+                    break;
+            }
+
+            if (moved) {
+                e.preventDefault(); 
+                activeObj.setCoords();
+                canvas.renderAll();
+            }
         }
     });
+
+    canvas.on('selection:created', updatePickers);
+    canvas.on('selection:updated', updatePickers);
+    
+    function updatePickers() {
+        const o = canvas.getActiveObject();
+        if(o && o.fill && typeof o.fill === 'string') {
+            document.getElementById('textColorPicker').value = o.fill;
+            document.getElementById('iconColorPicker').value = o.fill;
+        }
+    }
 
     document.getElementById('upload').onchange = (e) => { const r = new FileReader(); r.onload = (f) => { fabric.Image.fromURL(f.target.result, (img) => { img.scaleToHeight(80); canvas.add(img).centerObject(img); }); }; r.readAsDataURL(e.target.files[0]); };
 
     async function sendDataToGoogleSheet() {
         const name = document.getElementById('custName').value, phone = document.getElementById('custPhone').value, address = document.getElementById('custAddress').value, deliveryDate = document.getElementById('custDeliveryDate').value;
-        const qty = document.getElementById('custQty').value, totalPrice = document.getElementById('displayPrice').innerText;
+        const qty = document.getElementById('custQty').value, totalPrice = document.getElementById('displayPriceCheckout').innerText;
         const packIndex = document.getElementById('packagingSelect').value, packName = packagingData[packIndex].name;
 
         if(!name || !phone || !address) { showPopup("알림", "성함, 연락처, 주소는 필수입니다!"); return; }
+        if(!qty || qty < 1) { showPopup("알림", "수량을 입력해주세요."); return; }
 
         try {
             guide.visible = false;
-            // 🚨 아이폰 메모리 최적화 (화질을 0.8로 약간 낮춰서 튕김 방지)
             const imageData = canvas.toDataURL({ format: 'png', multiplier: 2, quality: 0.8 }); 
             guide.visible = true; canvas.renderAll();
 
             const orderData = { name, phone, address, deliveryDate, quantity: qty, totalPrice: totalPrice, productName: selectedProductName, packaging: packName, image: imageData };
             
-            showPopup("주문 전송 중", "잠시만 기다려 주세요...<br>(약 3~5초 소요)");
-            
+            showPopup("주문 전송 중", "잠시만 기다려 주세요...");
             await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(orderData) });
-            showPopup("✅ 주문 완료!", "사장님께 주문서가 발송되었습니다.<br>확인 후 연락드리겠습니다.");
+            showPopup("✅ 주문 완료!", "주문서가 정상적으로 접수되었습니다.");
         } catch(e) {
-            showPopup("전송 오류", "카카오톡에서는 오류가 날 수 있습니다.<br>상단의 <b>[주소 복사]</b>를 눌러<br>Safari에서 다시 시도해주세요!");
+            showPopup("전송 오류", "오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
         }
     }
 
