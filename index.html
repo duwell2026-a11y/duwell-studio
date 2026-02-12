@@ -3,8 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DUWELL Studio 3.6 (Mobile Fixed)</title>
+    <title>DUWELL Studio 3.8 (Crop Feature)</title>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@100;300;400;500;700;900&family=Black+Han+Sans&family=Do+Hyeon&family=Jua&family=Nanum+Pen+Script&family=Gugi&family=Yeon+Sung&family=East+Sea+Dokdo&family=Gamja+Flower&family=Sunflower:wght@300;500;700&family=Gaegu&family=Poor+Story&family=Song+Myung&family=Stylish&display=swap" rel="stylesheet">
     <style>
         :root { --duwell-wine: #800020; --sidebar-width: 380px; --towel-texture: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMiIvPgo8Y2lyY2xlIGN4PSIyIiBjeT0iMiIgcj0iMSIgZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIwLjEiLz4KPC9zdmc+'); }
@@ -68,7 +73,14 @@
         .select-field { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; background: white; cursor: pointer; margin-bottom: 15px; }
         .color-picker-box { width:100%; height:40px; cursor:pointer; border:1px solid #ddd; border-radius:5px; padding:2px; }
 
-        /* 수건 목업 스타일 */
+        .text-controls { display: flex; flex-direction: column; gap: 10px; background: white; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px; }
+        .control-row { display: flex; align-items: center; gap: 10px; justify-content: space-between; }
+        .control-btn { flex: 1; padding: 8px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: bold; }
+        .slider-container { flex: 1; display: flex; align-items: center; gap: 10px; }
+        .slider-container input { flex: 1; accent-color: var(--duwell-wine); }
+        .slider-val { font-size: 12px; font-weight: bold; width: 30px; text-align: right; }
+
+        /* 수건 목업 및 인쇄영역 라벨 */
         .mockup-wrapper { transform-origin: center center; transition: transform 0.2s; box-shadow: 0 20px 50px rgba(0,0,0,0.15); }
         #towelMockup { width: 900px; display: flex; flex-direction: column; align-items: center; background: white; }
         .terry-texture { background-color: var(--towel-color); background-image: var(--towel-texture); background-blend-mode: multiply; }
@@ -94,6 +106,18 @@
         .tool-btn:hover { background: #eee; }
         .tool-btn.danger { color: #e74c3c; }
 
+        /* [NEW] 이미지 자르기 모달 스타일 */
+        #cropModal { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.85); z-index: 20000; justify-content: center; align-items: center; flex-direction: column;
+        }
+        .crop-container { width: 90%; max-width: 600px; height: 60%; background: #000; margin-bottom: 20px; }
+        .crop-container img { display: block; max-width: 100%; }
+        .crop-actions { display: flex; gap: 15px; }
+        .crop-btn { padding: 12px 30px; border-radius: 25px; font-weight: bold; cursor: pointer; border: none; font-size: 16px; }
+        .crop-confirm { background: var(--duwell-wine); color: white; }
+        .crop-cancel { background: #fff; color: #333; }
+
         /* 팝업 및 로더 */
         #customPopup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10000; justify-content: center; align-items: center; }
         .popup-content { background: white; padding: 25px; border-radius: 15px; width: 300px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
@@ -102,46 +126,18 @@
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--duwell-wine); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* ==========================================================================
-           [반응형] 모바일 세로 모드 (Portrait) - 요청 사항 수정!
-           ========================================================================== */
+        /* 모바일 대응 */
         @media (max-width: 768px) and (orientation: portrait) {
             body { flex-direction: column; height: auto; overflow-y: auto; }
             .main-container { flex-direction: column-reverse; height: auto; overflow: visible; }
             .sidebar { width: 100%; height: auto; border-right: none; border-top: 2px solid var(--duwell-wine); }
-            
-            /* [Fix] 툴바 버튼 사이즈 축소 */
             .toolbar { justify-content: space-between; padding: 0 5px; }
-            .tool-btn { 
-                font-size: 11px; /* 글씨 크기 줄임 */
-                padding: 6px 4px; /* 패딩 줄임 */
-                gap: 2px; 
-            }
-
-            /* [Fix] 캔버스 영역 고정 (흔들림 방지) */
-            .workspace { 
-                height: 350px; 
-                flex: none; 
-                border-bottom: 1px solid #ddd;
-            }
-            .canvas-area { 
-                padding: 0; 
-                overflow: hidden; /* 스크롤 방지 */
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                background: #eef2f5; 
-            }
-            .mockup-wrapper { 
-                transform: scale(0.32); /* 사이즈 조금 더 축소하여 안전하게 배치 */
-                margin: 0; /* 여백 제거 */
-                box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            }
+            .tool-btn { font-size: 11px; padding: 6px 4px; gap: 2px; }
+            .workspace { height: 350px; flex: none; border-bottom: 1px solid #ddd; }
+            .canvas-area { padding: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #eef2f5; }
+            .mockup-wrapper { transform: scale(0.32); margin: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         }
 
-        /* ==========================================================================
-           [반응형] 모바일 가로 모드 (Landscape)
-           ========================================================================== */
         @media (max-width: 920px) and (orientation: landscape) {
             body { flex-direction: column; overflow: hidden; height: 100vh; }
             .main-container { flex-direction: row; height: 100%; overflow: hidden; }
@@ -164,6 +160,16 @@
     <p style="font-size:13px; color:#666;">디자인 도구 초기화 중...</p>
 </div>
 
+<div id="cropModal">
+    <div class="crop-container">
+        <img id="imageToCrop" src="" alt="Crop Image">
+    </div>
+    <div class="crop-actions">
+        <button class="crop-btn crop-cancel" onclick="cancelCrop()">취소</button>
+        <button class="crop-btn crop-confirm" onclick="confirmCrop()">✂️ 자르기 완료</button>
+    </div>
+</div>
+
 <button id="mobileLandscapeOrderBtn" class="btn-order" onclick="openAccordion('checkout')">주문하기</button>
 
 <div id="customPopup">
@@ -176,7 +182,7 @@
 
 <header>
     <div class="brand">
-        <svg viewBox="0 0 24 24" style="width:24px; height:24px; fill:#333; cursor:pointer;" onclick="alert('DUWELL Studio 3.6')"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+        <svg viewBox="0 0 24 24" style="width:24px; height:24px; fill:#333; cursor:pointer;" onclick="alert('DUWELL Studio 3.8')"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
         <span>DUWELL STUDIO</span>
     </div>
     <div class="header-actions">
@@ -220,8 +226,23 @@
         <div class="accordion-item">
             <button class="accordion-header" onclick="toggleAccordion('text', this)">4. 텍스트(문구) 넣기</button>
             <div id="acc-text" class="accordion-content">
-                <label class="group-label">폰트 선택 (15종)</label>
-                <div id="font-grid" style="display:flex; flex-direction:column; gap:8px; max-height:300px; overflow-y:auto;"></div>
+                <div class="text-controls">
+                    <div class="control-row">
+                        <label style="font-size:12px; font-weight:bold;">크기</label>
+                        <div class="slider-container">
+                            <input type="range" id="fontSizeSlider" min="10" max="200" value="40" oninput="changeFontSize(this.value)">
+                            <span id="fontSizeDisplay" class="slider-val">40</span>
+                        </div>
+                    </div>
+                    <div class="control-row">
+                        <label style="font-size:12px; font-weight:bold;">정렬</label>
+                        <button class="control-btn" onclick="setTextAlign('left')">좌측</button>
+                        <button class="control-btn" onclick="setTextAlign('center')">중앙</button>
+                        <button class="control-btn" onclick="setTextAlign('right')">우측</button>
+                    </div>
+                </div>
+                <label class="group-label">폰트 스타일</label>
+                <div id="font-grid" style="display:flex; flex-direction:column; gap:8px; max-height:200px; overflow-y:auto;"></div>
                 <div style="margin-top:15px;">
                     <label class="group-label">글자 색상</label>
                     <input type="color" id="textColorPicker" value="#333333" oninput="changeObjColor(this.value)" class="color-picker-box">
@@ -241,14 +262,11 @@
             </div>
         </div>
 
-     <div class="accordion-item">
+        <div class="accordion-item">
             <button class="accordion-header" onclick="toggleAccordion('upload', this)">6. 내 이미지 업로드</button>
             <div id="acc-upload" class="accordion-content">
-                <button class="item-btn" onclick="document.getElementById('upload').click()" style="width:100%; border:2px dashed #ddd; background:#fafafa;">
-                    📂 내 기기에서 사진 찾기
-                </button>
+                <button class="item-btn" onclick="document.getElementById('upload').click()" style="width:100%; border:2px dashed #ddd; background:#fafafa;">📂 내 기기에서 사진 찾기</button>
                 <input type="file" id="upload" accept="image/*" style="display:none">
-                
                 <div style="margin-top:10px; background:#fff5f5; padding:10px; border-radius:5px; font-size:12px; color:#e74c3c; line-height:1.4;">
                     <strong>⚠️ 화질 주의</strong><br>
                     업로드하신 이미지 화질이 낮으면 인쇄 시 흐리게 보일 수 있습니다.<br>
@@ -264,7 +282,10 @@
                 <input type="text" id="custName" placeholder="성함" class="input-field">
                 <input type="tel" id="custPhone" placeholder="연락처" class="input-field">
                 <input type="text" id="custAddress" placeholder="주소" class="input-field">
+                
+                <label class="group-label" style="margin-top:15px;">📅 희망 수령일</label>
                 <input type="date" id="custDeliveryDate" class="input-field">
+                
                 <hr style="border:0; border-top:1px dashed #ddd; margin:15px 0;">
                 <label class="group-label">포장 옵션</label>
                 <select id="packagingSelect" class="select-field" onchange="calcPrice()"></select>
@@ -318,6 +339,11 @@
     let currentMode = 'print', currentTowelColor = '#ffffff', guide;
     let currentPrice = 0, selectedProductName = "", packagingCost = 0;
     let productData = [], packagingData = [];
+    
+    // Cropper 변수
+    let cropper;
+    const cropModal = document.getElementById('cropModal');
+    const imageToCrop = document.getElementById('imageToCrop');
 
     const iconPaths = {
         '하트': 'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z',
@@ -494,17 +520,38 @@
     
     function changeObjColor(v) { 
         const o = canvas.getActiveObject(); 
-        if (o) { 
-            o.set('fill', v); 
-            if(o.paths) { o.paths.forEach(p => p.set({ fill: v })); }
+        if (o) {
+            if (o.isEditing && o.selectionStart !== o.selectionEnd) {
+                o.setSelectionStyles({ fill: v });
+            } else {
+                o.set('fill', v); 
+                if(o.paths) { o.paths.forEach(p => p.set({ fill: v })); }
+            }
             canvas.renderAll(); 
             document.getElementById('textColorPicker').value = v;
             document.getElementById('iconColorPicker').value = v;
         } 
     }
 
+    function changeFontSize(val) {
+        const o = canvas.getActiveObject();
+        if(o && (o.type === 'i-text' || o.type === 'text')) {
+            o.set('fontSize', parseInt(val, 10));
+            canvas.renderAll();
+            document.getElementById('fontSizeDisplay').innerText = val;
+        }
+    }
+
+    function setTextAlign(align) {
+        const o = canvas.getActiveObject();
+        if(o && (o.type === 'i-text' || o.type === 'text')) {
+            o.set('textAlign', align);
+            canvas.renderAll();
+        }
+    }
+
     function addText(f, t) { 
-        const it = new fabric.IText(t, { left: 100, top: 25, fontFamily: f, fontSize: 35, fill: document.getElementById('textColorPicker').value }); 
+        const it = new fabric.IText(t, { left: 100, top: 25, fontFamily: f, fontSize: 40, fill: document.getElementById('textColorPicker').value }); 
         canvas.add(it).centerObject(it).setActiveObject(it); 
     }
     function addIcon(n) { 
@@ -550,18 +597,60 @@
         }
     });
 
-    canvas.on('selection:created', updatePickers);
-    canvas.on('selection:updated', updatePickers);
+    canvas.on('selection:created', updateControls);
+    canvas.on('selection:updated', updateControls);
     
-    function updatePickers() {
+    function updateControls() {
         const o = canvas.getActiveObject();
-        if(o && o.fill && typeof o.fill === 'string') {
-            document.getElementById('textColorPicker').value = o.fill;
-            document.getElementById('iconColorPicker').value = o.fill;
+        if(o) {
+            if(o.fill && typeof o.fill === 'string') {
+                document.getElementById('textColorPicker').value = o.fill;
+                document.getElementById('iconColorPicker').value = o.fill;
+            }
+            if(o.fontSize) {
+                document.getElementById('fontSizeSlider').value = o.fontSize;
+                document.getElementById('fontSizeDisplay').innerText = o.fontSize;
+            }
         }
     }
 
-    document.getElementById('upload').onchange = (e) => { const r = new FileReader(); r.onload = (f) => { fabric.Image.fromURL(f.target.result, (img) => { img.scaleToHeight(80); canvas.add(img).centerObject(img); }); }; r.readAsDataURL(e.target.files[0]); };
+    // [New] 이미지 자르기 로직
+    document.getElementById('upload').onchange = (e) => { 
+        const files = e.target.files;
+        if(files && files.length > 0) {
+            const file = files[0];
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                imageToCrop.src = evt.target.result;
+                cropModal.style.display = 'flex'; // 모달 열기
+                if(cropper) { cropper.destroy(); } // 기존 크로퍼 초기화
+                cropper = new Cropper(imageToCrop, {
+                    viewMode: 1,
+                    autoCropArea: 0.8,
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    function cancelCrop() {
+        cropModal.style.display = 'none';
+        document.getElementById('upload').value = ''; // 입력 초기화
+        if(cropper) { cropper.destroy(); cropper = null; }
+    }
+
+    function confirmCrop() {
+        if(!cropper) return;
+        const canvasData = cropper.getCroppedCanvas();
+        if(canvasData) {
+            const croppedDataUrl = canvasData.toDataURL();
+            fabric.Image.fromURL(croppedDataUrl, (img) => {
+                img.scaleToHeight(100); 
+                canvas.add(img).centerObject(img).setActiveObject(img);
+            });
+            cancelCrop(); // 닫기 및 초기화
+        }
+    }
 
     async function sendDataToGoogleSheet() {
         const name = document.getElementById('custName').value, phone = document.getElementById('custPhone').value, address = document.getElementById('custAddress').value, deliveryDate = document.getElementById('custDeliveryDate').value;
