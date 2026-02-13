@@ -659,60 +659,30 @@ function confirmCrop() {
     }
 }
 
-   async function sendDataToGoogleSheet() {
-    const name = document.getElementById('custName').value, 
-          phone = document.getElementById('custPhone').value, 
-          address = document.getElementById('custAddress').value, 
-          deliveryDate = document.getElementById('custDeliveryDate').value;
-    
-    const qty = document.getElementById('custQty').value, 
-          totalPrice = document.getElementById('displayPriceCheckout').innerText;
-    
-    const packIndex = document.getElementById('packagingSelect').value, 
-          packName = packagingData[packIndex].name;
+    async function sendDataToGoogleSheet() {
+        const name = document.getElementById('custName').value, phone = document.getElementById('custPhone').value, address = document.getElementById('custAddress').value, deliveryDate = document.getElementById('custDeliveryDate').value;
+        const qty = document.getElementById('custQty').value, totalPrice = document.getElementById('displayPriceCheckout').innerText;
+        const packIndex = document.getElementById('packagingSelect').value, packName = packagingData[packIndex].name;
 
-    // 필수 입력 체크
-    if(!name || !phone || !address) { 
-        showPopup("알림", "성함, 연락처, 주소는 필수입니다!"); 
-        return; 
-    }
-    if(!qty || qty < 1) { 
-        showPopup("알림", "수량을 입력해주세요."); 
-        return; 
+        if(!name || !phone || !address) { showPopup("알림", "성함, 연락처, 주소는 필수입니다!"); return; }
+        if(!qty || qty < 1) { showPopup("알림", "수량을 입력해주세요."); return; }
+
+        try {
+            guide.visible = false;
+            const imageData = canvas.toDataURL({ format: 'png', multiplier: 5, quality: 1.0 }); 
+            guide.visible = true; canvas.renderAll();
+
+            const orderData = { name, phone, address, deliveryDate, quantity: qty, totalPrice: totalPrice, productName: selectedProductName, packaging: packName, image: imageData };
+            
+            showPopup("주문 전송 중", "잠시만 기다려 주세요...");
+            await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(orderData) });
+            showPopup("✅ 주문 완료!", "주문서가 정상적으로 접수되었습니다.");
+        } catch(e) {
+            showPopup("전송 오류", "오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+        }
     }
 
-    try {
-        // 가이드선 숨기고 고화질 이미지 생성
-        guide.visible = false;
-        const imageData = canvas.toDataURL({ format: 'png', multiplier: 5, quality: 1.0 }); 
-        guide.visible = true; 
-        canvas.renderAll();
-
-        // [데이터 구성] 제품명과 수건 색상 추가
-        const orderData = { 
-            name, 
-            phone, 
-            address, 
-            deliveryDate, 
-            quantity: qty, 
-            totalPrice: totalPrice, 
-            productName: selectedProductName, // 선택된 제품명
-            color: currentTowelColor,         // 선택된 수건 색상 (HEX값)
-            packaging: packName, 
-            image: imageData 
-        };
-        
-        showPopup("주문 전송 중", "잠시만 기다려 주세요...");
-        
-        await fetch(scriptURL, { 
-            method: 'POST', 
-            mode: 'no-cors', 
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(orderData) 
-        });
-        
-        showPopup("✅ 주문 완료!", "주문서가 정상적으로 접수되었습니다.");
-    } catch(e) {
-        showPopup("전송 오류", "오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
-    }
-}
+    fetchData();
+</script>
+</body>
+</html>
