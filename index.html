@@ -660,6 +660,19 @@ function confirmCrop() {
 }
 
 async function sendDataToGoogleSheet() {
+    // 1. 색상 코드와 한글 이름을 매칭하는 사전 (옵션관리 시트의 컬러 순서대로 추가하세요)
+    const colorMap = {
+        "#ffffff": "화이트",
+        "#800020": "와인",
+        "#000000": "블랙",
+        "#f5f5f0": "아이보리",
+        "#d3d3d3": "라이트그레이",
+        // 필요한 색상을 여기에 추가하세요.
+    };
+
+    // 2. 현재 선택된 코드에 해당하는 이름을 찾고, 없으면 코드 그대로 표시
+    const colorName = colorMap[currentTowelColor] || currentTowelColor;
+
     const name = document.getElementById('custName').value, 
           phone = document.getElementById('custPhone').value, 
           address = document.getElementById('custAddress').value, 
@@ -680,7 +693,6 @@ async function sendDataToGoogleSheet() {
         guide.visible = true; 
         canvas.renderAll();
 
-        // [이 부분에 color 데이터를 추가하세요]
         const orderData = { 
             name, 
             phone, 
@@ -689,14 +701,13 @@ async function sendDataToGoogleSheet() {
             quantity: qty, 
             totalPrice: totalPrice, 
             productName: selectedProductName, 
-            color: currentTowelColor, // 현재 선택된 색상(#ffffff 등)을 전송
+            color: colorName, // [수정됨] 이제 #000000 대신 "블랙"이 전송됩니다.
             packaging: packName, 
             image: imageData 
         };
         
         showPopup("주문 전송 중", "잠시만 기다려 주세요...");
         
-        // POST 방식으로 데이터를 보냅니다.
         await fetch(scriptURL, { 
             method: 'POST', 
             mode: 'no-cors', 
@@ -713,4 +724,5 @@ async function sendDataToGoogleSheet() {
 </script>
 </body>
 </html>
+
 
