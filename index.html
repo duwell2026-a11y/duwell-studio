@@ -659,30 +659,58 @@ function confirmCrop() {
     }
 }
 
-    async function sendDataToGoogleSheet() {
-        const name = document.getElementById('custName').value, phone = document.getElementById('custPhone').value, address = document.getElementById('custAddress').value, deliveryDate = document.getElementById('custDeliveryDate').value;
-        const qty = document.getElementById('custQty').value, totalPrice = document.getElementById('displayPriceCheckout').innerText;
-        const packIndex = document.getElementById('packagingSelect').value, packName = packagingData[packIndex].name;
+async function sendDataToGoogleSheet() {
+    const name = document.getElementById('custName').value, 
+          phone = document.getElementById('custPhone').value, 
+          address = document.getElementById('custAddress').value, 
+          deliveryDate = document.getElementById('custDeliveryDate').value;
+    
+    const qty = document.getElementById('custQty').value, 
+          totalPrice = document.getElementById('displayPriceCheckout').innerText;
+    
+    const packIndex = document.getElementById('packagingSelect').value, 
+          packName = packagingData[packIndex].name;
 
-        if(!name || !phone || !address) { showPopup("알림", "성함, 연락처, 주소는 필수입니다!"); return; }
-        if(!qty || qty < 1) { showPopup("알림", "수량을 입력해주세요."); return; }
+    if(!name || !phone || !address) { showPopup("알림", "성함, 연락처, 주소는 필수입니다!"); return; }
+    if(!qty || qty < 1) { showPopup("알림", "수량을 입력해주세요."); return; }
 
-        try {
-            guide.visible = false;
-            const imageData = canvas.toDataURL({ format: 'png', multiplier: 5, quality: 1.0 }); 
-            guide.visible = true; canvas.renderAll();
+    try {
+        guide.visible = false;
+        const imageData = canvas.toDataURL({ format: 'png', multiplier: 5, quality: 1.0 }); 
+        guide.visible = true; 
+        canvas.renderAll();
 
-            const orderData = { name, phone, address, deliveryDate, quantity: qty, totalPrice: totalPrice, productName: selectedProductName, packaging: packName, image: imageData };
-            
-            showPopup("주문 전송 중", "잠시만 기다려 주세요...");
-            await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(orderData) });
-            showPopup("✅ 주문 완료!", "주문서가 정상적으로 접수되었습니다.");
-        } catch(e) {
-            showPopup("전송 오류", "오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
-        }
+        // [이 부분에 color 데이터를 추가하세요]
+        const orderData = { 
+            name, 
+            phone, 
+            address, 
+            deliveryDate, 
+            quantity: qty, 
+            totalPrice: totalPrice, 
+            productName: selectedProductName, 
+            color: currentTowelColor, // 현재 선택된 색상(#ffffff 등)을 전송
+            packaging: packName, 
+            image: imageData 
+        };
+        
+        showPopup("주문 전송 중", "잠시만 기다려 주세요...");
+        
+        // POST 방식으로 데이터를 보냅니다.
+        await fetch(scriptURL, { 
+            method: 'POST', 
+            mode: 'no-cors', 
+            body: JSON.stringify(orderData) 
+        });
+        
+        showPopup("✅ 주문 완료!", "주문서가 정상적으로 접수되었습니다.");
+    } catch(e) {
+        showPopup("전송 오류", "오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
     }
+}
 
     fetchData();
 </script>
 </body>
 </html>
+
