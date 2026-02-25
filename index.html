@@ -466,21 +466,33 @@
         changeProduct();
     }
 
-    function changeProduct() {
-        if(productData.length === 0) return;
-        const index = document.getElementById('productSelect').value;
-        const product = productData[index];
-        currentPrice = product.price;
-        selectedProductName = product.name;
-        calcPrice();
-        
-        const tg = document.getElementById('towel-grid');
-        tg.innerHTML = '';
-        product.colors.forEach((c, idx) => {
-            let d = document.createElement('div'); d.className='color-circle'; d.style.backgroundColor=c; d.onclick=()=>setTowel(c, d); tg.appendChild(d);
-            if(idx === 0) setTowel(c, d);
-        });
-    }
+// 기존 코드
+// product.colors.forEach((c, idx) => { ...
+
+// 👇 이렇게 수정해주세요 (안전 장치 추가)
+function changeProduct() {
+    if(productData.length === 0) return;
+    const index = document.getElementById('productSelect').value;
+    const product = productData[index];
+    currentPrice = product.price || 0;
+    selectedProductName = product.name;
+    calcPrice();
+    
+    const tg = document.getElementById('towel-grid');
+    tg.innerHTML = '';
+    
+    // [핵심] 시트에 색상 정보가 아예 없으면 기본으로 하얀색(#ffffff)을 띄우도록 방어
+    const colors = product.colors && product.colors.length > 0 ? product.colors : ["#ffffff"];
+    
+    colors.forEach((c, idx) => {
+        let d = document.createElement('div'); 
+        d.className='color-circle'; 
+        d.style.backgroundColor=c; 
+        d.onclick=()=>setTowel(c, d); 
+        tg.appendChild(d);
+        if(idx === 0) setTowel(c, d); // 첫 번째 색상 자동 선택
+    });
+}
 
     function calcPrice() {
         if(packagingData.length === 0) return;
@@ -724,5 +736,6 @@ async function sendDataToGoogleSheet() {
 </script>
 </body>
 </html>
+
 
 
