@@ -683,7 +683,8 @@ async function sendDataToGoogleSheet() {
     };
 
     // 2. 현재 선택된 코드에 해당하는 이름을 찾고, 없으면 코드 그대로 표시
-    const colorName = colorMap[currentTowelColor] || currentTowelColor;
+    const normalizedColor = currentTowelColor.toLowerCase();
+    const colorName = colorMap[normalizedColor] || currentTowelColor;
 
     const name = document.getElementById('custName').value, 
           phone = document.getElementById('custPhone').value, 
@@ -736,6 +737,7 @@ async function sendDataToGoogleSheet() {
 </script>
 </body>
 </html>
+
 
 
 
