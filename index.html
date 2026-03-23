@@ -152,11 +152,24 @@
         
         #mobileLandscapeOrderBtn { display: none; }
         /* 아이콘 그리드 전용 스타일 추가 */
-#icon-grid { 
-    display: grid; 
-    grid-template-columns: repeat(5, 1fr); /* 한 줄에 5개씩 배치 (더 촘촘하게) */
-    gap: 8px; 
-    padding: 10px 0;
+#icon-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 한 줄에 4개씩 */
+    gap: 8px;
+    max-height: 400px; /* 아이콘이 많아도 잘리지 않게 높이 확보 */
+    overflow-y: auto;
+}
+
+#icon-grid .item-btn {
+    padding: 10px 5px;
+    min-height: 70px;
+    font-size: 11px;
+}
+
+#icon-grid .item-btn svg {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 5px;
 }
 
 /* 아코디언 내용 영역이 아이콘을 다 수용하도록 설정 */
@@ -393,7 +406,6 @@ const iconPaths = {
     '축구': 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14H11v-2h2v2zm0-4H11V7h2v5z',
     '자전거': 'M15.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM5 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5zm14-8.5c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5z'
 };
-
     function toggleAccordion(id, btnElement) {
         const content = document.getElementById('acc-' + id);
         const isOpen = content.classList.contains('show');
@@ -448,12 +460,15 @@ const recommendedDesigns = [
         guide = new fabric.Rect({ left: 5, top: 5, width: 856, height: 90, fill: 'transparent', stroke: '#800020', strokeDashArray: [4, 4], selectable: false, evented: false, opacity: 0.3 });
         canvas.add(guide);
         
-        const ig = document.getElementById('icon-grid');
-        Object.keys(iconPaths).forEach(n => {
-            let b = document.createElement('button'); b.className='item-btn'; b.onclick=()=>addIcon(n);
-            b.innerHTML = `<svg viewBox="0 0 24 24"><path d="${iconPaths[n]}"></path></svg><span>${n}</span>`;
-            ig.appendChild(b);
-        });
+const ig = document.getElementById('icon-grid');
+ig.innerHTML = ''; // 기존 내용 삭제 후 새로 생성
+Object.keys(iconPaths).forEach(n => {
+    let b = document.createElement('button'); 
+    b.className = 'item-btn'; 
+    b.onclick = () => addIcon(n);
+    b.innerHTML = `<svg viewBox="0 0 24 24"><path d="${iconPaths[n]}"></path></svg><span>${n}</span>`;
+    ig.appendChild(b);
+});
 
         const fg = document.getElementById('font-grid');
         ['Noto Sans KR', 'Nanum Myeongjo', 'Do Hyeon', 'Jua', 'Nanum Pen Script', 'Black Han Sans', 'Gugi', 'Yeon Sung', 'East Sea Dokdo', 'Gamja Flower', 'Poor Story', 'Gaegu', 'Sunflower', 'Song Myung', 'Stylish'].forEach(f => {
