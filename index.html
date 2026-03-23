@@ -379,35 +379,36 @@
     let currentPrice = 0, selectedProductName = "", packagingCost = 0;
     let productData = [], packagingData = [];
     
-    // Cropper 변수
     let cropper;
     const cropModal = document.getElementById('cropModal');
     const imageToCrop = document.getElementById('imageToCrop');
 
-const iconPaths = {
-    '하트': 'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z',
-    '별': 'M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z',
-    '왕관': 'M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z',
-    '스마일': 'M12 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z',
-    '체크': 'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z',
-    '엄지척': 'M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z',
-    '트로피': 'M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 10.63 21 8.55 21 8V7c0-1.1-.9-2-2-2z',
-    '비행기': 'M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z',
-    '카메라': 'M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9z',
-    '해': 'M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1z',
-    '달': 'M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26',
-    '구름': 'M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5',
-    '집': 'M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z',
-    '음표': 'M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z',
-    '선물': 'M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2',
-    '커피': 'M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4v-2z',
-    '나무': 'M13 16.12a7 7 0 0 0 6.17-6.95c0-3.87-3.13-7-7-7s-7 3.13-7 7a7 7 0 0 0 6.17 6.95V19H5v2h14v-2h-6v-2.88z',
-    '강아지': 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14H11v-2h2v2zm0-4H11V7h2v5z',
-    '축구': 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14H11v-2h2v2zm0-4H11V7h2v5z',
-    '자전거': 'M15.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM5 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5zm14-8.5c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5z'
-};
+    const iconPaths = {
+        '하트': 'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z',
+        '별': 'M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z',
+        '왕관': 'M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z',
+        '스마일': 'M12 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z',
+        '체크': 'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z',
+        '엄지척': 'M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z',
+        '트로피': 'M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 10.63 21 8.55 21 8V7c0-1.1-.9-2-2-2z',
+        '비행기': 'M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z',
+        '카메라': 'M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9z',
+        '해': 'M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1z',
+        '달': 'M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26',
+        '구름': 'M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5',
+        '집': 'M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z',
+        '음표': 'M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z',
+        '선물': 'M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2',
+        '커피': 'M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4v-2z',
+        '나무': 'M13 16.12a7 7 0 0 0 6.17-6.95c0-3.87-3.13-7-7-7s-7 3.13-7 7a7 7 0 0 0 6.17 6.95V19H5v2h14v-2h-6v-2.88z',
+        '강아지': 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14H11v-2h2v2zm0-4H11V7h2v5z',
+        '축구': 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14H11v-2h2v2zm0-4H11V7h2v5z',
+        '자전거': 'M15.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM5 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5zm14-8.5c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5z'
+    };
+
     function toggleAccordion(id, btnElement) {
         const content = document.getElementById('acc-' + id);
+        if (!content) return;
         const isOpen = content.classList.contains('show');
         document.querySelectorAll('.accordion-content').forEach(el => el.classList.remove('show'));
         document.querySelectorAll('.accordion-header').forEach(el => el.classList.remove('active'));
@@ -419,6 +420,7 @@ const iconPaths = {
 
     function openAccordion(id) {
         const content = document.getElementById('acc-' + id);
+        if (!content) return;
         const header = content.previousElementSibling;
         document.querySelectorAll('.accordion-content').forEach(el => el.classList.remove('show'));
         document.querySelectorAll('.accordion-header').forEach(el => el.classList.remove('active'));
@@ -427,31 +429,33 @@ const iconPaths = {
         header.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-const recommendedDesigns = [
-    { name: '감사(꽃)', url: 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=200&q=80' },
-    { name: '돌잔치(아기)', url: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=200&q=80' },
-    { name: '웨딩(반지)', url: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=200&q=80' },
-    { name: '생일(케이크)', url: 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&w=200&q=80' },
-    { name: '반려동물', url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=200&q=80' },
-    { name: '로고(심플)', url: 'https://images.unsplash.com/photo-1572044162444-ad60f128bde2?auto=format&fit=crop&w=200&q=80' }
-];
+    const recommendedDesigns = [
+        { name: '감사(꽃)', url: 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=200&q=80' },
+        { name: '돌잔치(아기)', url: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=200&q=80' },
+        { name: '웨딩(반지)', url: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=200&q=80' },
+        { name: '생일(케이크)', url: 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&w=200&q=80' },
+        { name: '반려동물', url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=200&q=80' },
+        { name: '로고(심플)', url: 'https://images.unsplash.com/photo-1572044162444-ad60f128bde2?auto=format&fit=crop&w=200&q=80' }
+    ];
 
     function showPopup(title, msg) {
         document.getElementById('popupTitle').innerText = title;
         document.getElementById('popupMsg').innerHTML = msg;
         document.getElementById('customPopup').style.display = 'flex';
     }
+
     function closePopup() { document.getElementById('customPopup').style.display = 'none'; }
 
     async function fetchData() {
         try {
             const response = await fetch(scriptURL);
             const data = await response.json();
-            productData = data.products;
-            packagingData = data.packaging;
+            productData = data.products || [];
+            packagingData = data.packaging || [];
             init();
             document.getElementById('loading').style.display = 'none';
         } catch (error) {
+            console.error("Fetch Error:", error);
             showPopup("오류", "서버 연결에 실패했습니다.<br>새로고침 해주세요.");
         }
     }
@@ -460,45 +464,57 @@ const recommendedDesigns = [
         guide = new fabric.Rect({ left: 5, top: 5, width: 856, height: 90, fill: 'transparent', stroke: '#800020', strokeDashArray: [4, 4], selectable: false, evented: false, opacity: 0.3 });
         canvas.add(guide);
         
-const ig = document.getElementById('icon-grid');
-ig.innerHTML = ''; // 기존 내용 삭제 후 새로 생성
-Object.keys(iconPaths).forEach(n => {
-    let b = document.createElement('button'); 
-    b.className = 'item-btn'; 
-    b.onclick = () => addIcon(n);
-    b.innerHTML = `<svg viewBox="0 0 24 24"><path d="${iconPaths[n]}"></path></svg><span>${n}</span>`;
-    ig.appendChild(b);
-});
+        const ig = document.getElementById('icon-grid');
+        if (ig) {
+            ig.innerHTML = ''; 
+            Object.keys(iconPaths).forEach(n => {
+                let b = document.createElement('button'); 
+                b.className = 'item-btn'; 
+                b.onclick = () => addIcon(n);
+                b.innerHTML = `<svg viewBox="0 0 24 24"><path d="${iconPaths[n]}"></path></svg><span>${n}</span>`;
+                ig.appendChild(b);
+            });
+        }
 
         const fg = document.getElementById('font-grid');
-        ['Noto Sans KR', 'Nanum Myeongjo', 'Do Hyeon', 'Jua', 'Nanum Pen Script', 'Black Han Sans', 'Gugi', 'Yeon Sung', 'East Sea Dokdo', 'Gamja Flower', 'Poor Story', 'Gaegu', 'Sunflower', 'Song Myung', 'Stylish'].forEach(f => {
-            let b = document.createElement('button'); b.className='item-btn'; b.style.fontFamily=f; b.onclick=()=>addText(f, 'DUWELL'); 
-            b.style.flexDirection = 'row'; b.style.justifyContent='space-between'; b.style.padding='15px';
-            b.innerHTML = `<span style="font-size:16px;">${f}</span><span style="font-size:12px; color:#aaa;">가나다</span>`;
-            fg.appendChild(b);
-        });
+        if (fg) {
+            ['Noto Sans KR', 'Nanum Myeongjo', 'Do Hyeon', 'Jua', 'Nanum Pen Script', 'Black Han Sans', 'Gugi', 'Yeon Sung', 'East Sea Dokdo', 'Gamja Flower', 'Poor Story', 'Gaegu', 'Sunflower', 'Song Myung', 'Stylish'].forEach(f => {
+                let b = document.createElement('button'); b.className='item-btn'; b.style.fontFamily=f; b.onclick=()=>addText(f, 'DUWELL'); 
+                b.style.flexDirection = 'row'; b.style.justifyContent='space-between'; b.style.padding='15px';
+                b.innerHTML = `<span style="font-size:16px;">${f}</span><span style="font-size:12px; color:#aaa;">가나다</span>`;
+                fg.appendChild(b);
+            });
+        }
 
         const dg = document.getElementById('design-grid');
-        recommendedDesigns.forEach(d => {
-            let b = document.createElement('button');
-            b.className = 'item-btn design-btn';
-            b.style.backgroundImage = `url('${d.url}')`;
-            b.onclick = () => addDesignImage(d.url);
-            b.innerHTML = `<span style="background:rgba(255,255,255,0.8); padding:2px 5px; border-radius:4px; font-size:11px; margin-top:auto;">${d.name}</span>`;
-            dg.appendChild(b);
-        });
+        if (dg) {
+            recommendedDesigns.forEach(d => {
+                let b = document.createElement('button');
+                b.className = 'item-btn design-btn';
+                b.style.backgroundImage = `url('${d.url}')`;
+                b.onclick = () => addDesignImage(d.url);
+                b.innerHTML = `<span style="background:rgba(255,255,255,0.8); padding:2px 5px; border-radius:4px; font-size:11px; margin-top:auto;">${d.name}</span>`;
+                dg.appendChild(b);
+            });
+        }
 
         const ps = document.getElementById('productSelect');
-        ps.innerHTML = "";
-        productData.forEach((p, index) => {
-            let opt = document.createElement('option'); opt.value = index; opt.innerText = `${p.name} (${p.price.toLocaleString()}원)`; ps.appendChild(opt);
-        });
+        if (ps) {
+            ps.innerHTML = "";
+            productData.forEach((p, index) => {
+                let opt = document.createElement('option'); opt.value = index; opt.innerText = `${p.name} (${p.price.toLocaleString()}원)`; ps.appendChild(opt);
+            });
+            ps.onchange = changeProduct;
+        }
 
         const packSel = document.getElementById('packagingSelect');
-        packSel.innerHTML = "";
-        packagingData.forEach((p, index) => {
-            let opt = document.createElement('option'); opt.value = index; opt.innerText = `${p.name} (${p.price.toLocaleString()}원)`; packSel.appendChild(opt);
-        });
+        if (packSel) {
+            packSel.innerHTML = "";
+            packagingData.forEach((p, index) => {
+                let opt = document.createElement('option'); opt.value = index; opt.innerText = `${p.name} (${p.price.toLocaleString()}원)`; packSel.appendChild(opt);
+            });
+            packSel.onchange = calcPrice;
+        }
         
         document.querySelectorAll('.input-field').forEach(input => {
             input.addEventListener('focus', () => { canvas.discardActiveObject(); canvas.renderAll(); });
@@ -507,58 +523,75 @@ Object.keys(iconPaths).forEach(n => {
         changeProduct();
     }
 
-// 기존 코드
-// product.colors.forEach((c, idx) => { ...
+    function changeProduct() {
+        if(productData.length === 0) return;
+        const psElement = document.getElementById('productSelect');
+        const index = psElement ? psElement.value : 0;
+        const product = productData[index];
+        if(!product) return;
 
-// 👇 이렇게 수정해주세요 (안전 장치 추가)
-function changeProduct() {
-    if(productData.length === 0) return;
-    const index = document.getElementById('productSelect').value;
-    const product = productData[index];
-    currentPrice = product.price || 0;
-    selectedProductName = product.name;
-    calcPrice();
-    
-    const tg = document.getElementById('towel-grid');
-    tg.innerHTML = '';
-    
-    // [핵심] 시트에 색상 정보가 아예 없으면 기본으로 하얀색(#ffffff)을 띄우도록 방어
-    const colors = product.colors && product.colors.length > 0 ? product.colors : ["#ffffff"];
-    
-    colors.forEach((c, idx) => {
-        let d = document.createElement('div'); 
-        d.className='color-circle'; 
-        d.style.backgroundColor=c; 
-        d.onclick=()=>setTowel(c, d); 
-        tg.appendChild(d);
-        if(idx === 0) setTowel(c, d); // 첫 번째 색상 자동 선택
-    });
-}
+        currentPrice = product.price || 0;
+        selectedProductName = product.name;
+        calcPrice();
+        
+        const tg = document.getElementById('towel-grid');
+        if (tg) {
+            tg.innerHTML = '';
+            const colors = product.colors && product.colors.length > 0 ? product.colors : ["#ffffff"];
+            colors.forEach((c, idx) => {
+                let d = document.createElement('div'); 
+                d.className='color-circle'; 
+                d.style.backgroundColor=c; 
+                d.onclick=()=>setTowel(c, d); 
+                tg.appendChild(d);
+                if(idx === 0) setTowel(c, d); 
+            });
+        }
+    }
 
     function calcPrice() {
-        if(packagingData.length === 0) return;
-        const qty = document.getElementById('custQty').value;
-        const packIndex = document.getElementById('packagingSelect').value;
-        packagingCost = packagingData[packIndex].price;
+        if(productData.length === 0) return;
+        const qtyElement = document.getElementById('custQty');
+        const qty = qtyElement ? qtyElement.value : 1;
+        
+        const packSel = document.getElementById('packagingSelect');
+        const packIndex = packSel ? packSel.value : 0;
+        packagingCost = (packagingData[packIndex] && packagingData[packIndex].price) ? packagingData[packIndex].price : 0;
+        
         let total = 0; if (qty > 0) total = (currentPrice + packagingCost) * qty;
         
         const priceStr = total.toLocaleString();
-        document.getElementById('headerPrice').innerText = priceStr;
-        document.getElementById('displayPriceCheckout').innerText = priceStr + "원";
+        const headerPrice = document.getElementById('headerPrice');
+        const displayPrice = document.getElementById('displayPriceCheckout');
+        if(headerPrice) headerPrice.innerText = priceStr;
+        if(displayPrice) displayPrice.innerText = priceStr + "원";
     }
 
     function setMode(m) {
         currentMode = m;
-        const mock = document.getElementById('towelMockup'), txt = document.getElementById('modeText'), embBg = document.querySelector('.embroidery-bg'), btnP = document.getElementById('btn-p'), btnE = document.getElementById('btn-e'), warning = document.getElementById('embroideryWarning');
+        const mock = document.getElementById('towelMockup'), 
+              txt = document.getElementById('modeText'), 
+              embBg = document.querySelector('.embroidery-bg'), 
+              btnP = document.getElementById('btn-print'), 
+              btnE = document.getElementById('btn-embroidery'), 
+              warning = document.getElementById('embroideryWarning');
         
         if(m === 'print') { 
-            mock.className='mode-print'; txt.innerText='● 전사 인쇄 (화이트 밴드) 미리보기'; embBg.style.display='none'; canvas.backgroundColor='#ffffff'; 
-            btnP.classList.add('active'); btnE.classList.remove('active');
-            warning.style.display = 'none';
+            if(mock) mock.className='mode-print'; 
+            if(txt) txt.innerText='● 전사 인쇄 (화이트 밴드) 미리보기'; 
+            if(embBg) embBg.style.display='none'; 
+            canvas.backgroundColor='#ffffff'; 
+            if(btnP) btnP.classList.add('active'); 
+            if(btnE) btnE.classList.remove('active');
+            if(warning) warning.style.display = 'none';
         } else { 
-            mock.className='mode-embroidery'; txt.innerText='● 컴퓨터 자수 (일반 수건) 미리보기'; embBg.style.display='block'; canvas.backgroundColor=null; 
-            btnE.classList.add('active'); btnP.classList.remove('active');
-            warning.style.display = 'block';
+            if(mock) mock.className='mode-embroidery'; 
+            if(txt) txt.innerText='● 컴퓨터 자수 (일반 수건) 미리보기'; 
+            if(embBg) embBg.style.display='block'; 
+            canvas.backgroundColor=null; 
+            if(btnE) btnE.classList.add('active'); 
+            if(btnP) btnP.classList.remove('active');
+            if(warning) warning.style.display = 'block';
         }
         canvas.renderAll();
     }
@@ -581,8 +614,10 @@ function changeProduct() {
                 if(o.paths) { o.paths.forEach(p => p.set({ fill: v })); }
             }
             canvas.renderAll(); 
-            document.getElementById('textColorPicker').value = v;
-            document.getElementById('iconColorPicker').value = v;
+            const txtCP = document.getElementById('textColorPicker');
+            const icoCP = document.getElementById('iconColorPicker');
+            if(txtCP) txtCP.value = v;
+            if(icoCP) icoCP.value = v;
         } 
     }
 
@@ -591,7 +626,8 @@ function changeProduct() {
         if(o && (o.type === 'i-text' || o.type === 'text')) {
             o.set('fontSize', parseInt(val, 10));
             canvas.renderAll();
-            document.getElementById('fontSizeDisplay').innerText = val;
+            const fsDisp = document.getElementById('fontSizeDisplay');
+            if(fsDisp) fsDisp.innerText = val;
         }
     }
 
@@ -604,20 +640,22 @@ function changeProduct() {
     }
 
     function addText(f, t) { 
-        const it = new fabric.IText(t, { left: 100, top: 25, fontFamily: f, fontSize: 40, fill: document.getElementById('textColorPicker').value }); 
+        const cp = document.getElementById('textColorPicker');
+        const fillValue = cp ? cp.value : '#000000';
+        const it = new fabric.IText(t, { left: 100, top: 25, fontFamily: f, fontSize: 40, fill: fillValue }); 
         canvas.add(it).centerObject(it).setActiveObject(it); 
     }
-// addIcon 함수 수정
-function addIcon(n) { 
-    // 현재 선택된 '글자 색상' 혹은 '아이콘 색상' 피커의 값을 가져옴
-    const currentColor = document.getElementById('iconColorPicker').value;
-    const p = new fabric.Path(iconPaths[n], { 
-        fill: currentColor, 
-        scaleX: 1.5, 
-        scaleY: 1.5 
-    }); 
-    canvas.add(p).centerObject(p).setActiveObject(p); 
-}
+
+    function addIcon(n) { 
+        const cp = document.getElementById('iconColorPicker');
+        const currentColor = cp ? cp.value : '#000000';
+        const p = new fabric.Path(iconPaths[n], { 
+            fill: currentColor, 
+            scaleX: 1.5, 
+            scaleY: 1.5 
+        }); 
+        canvas.add(p).centerObject(p).setActiveObject(p); 
+    }
     
     function addDesignImage(url) {
         fabric.Image.fromURL(url, (img) => {
@@ -626,18 +664,36 @@ function addIcon(n) {
         }, { crossOrigin: 'anonymous' });
     }
 
-    function alignObj(type) { const o = canvas.getActiveObject(); if(!o) return; if(type === 'left') o.set({ left: 10 }); else if(type === 'right') o.set({ left: canvas.width - o.getScaledWidth() - 10 }); else if(type === 'centerH') canvas.centerObjectH(o); else if(type === 'centerFull') canvas.centerObject(o); o.setCoords(); canvas.renderAll(); }
-    function changeLayer(d) { const o = canvas.getActiveObject(); if(!o) return; if(d === 'front') o.bringForward(); else o.sendBackwards(); canvas.sendToBack(guide); canvas.renderAll(); }
-    function deleteObj() { canvas.getActiveObjects().forEach(o => canvas.remove(o)); canvas.discardActiveObject().renderAll(); }
+    function alignObj(type) { 
+        const o = canvas.getActiveObject(); 
+        if(!o) return; 
+        if(type === 'left') o.set({ left: 10 }); 
+        else if(type === 'right') o.set({ left: canvas.width - o.getScaledWidth() - 10 }); 
+        else if(type === 'centerH') canvas.centerObjectH(o); 
+        else if(type === 'centerFull') canvas.centerObject(o); 
+        o.setCoords(); canvas.renderAll(); 
+    }
+
+    function changeLayer(d) { 
+        const o = canvas.getActiveObject(); 
+        if(!o) return; 
+        if(d === 'front') o.bringForward(); 
+        else o.sendBackwards(); 
+        canvas.sendToBack(guide); 
+        canvas.renderAll(); 
+    }
+
+    function deleteObj() { 
+        canvas.getActiveObjects().forEach(o => canvas.remove(o)); 
+        canvas.discardActiveObject().renderAll(); 
+    }
     
     window.addEventListener('keydown', (e) => {
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-
         const activeObj = canvas.getActiveObject();
         if (activeObj) {
             const step = e.shiftKey ? 10 : 1; 
             let moved = false;
-
             switch (e.key) {
                 case 'ArrowUp': activeObj.top -= step; moved = true; break;
                 case 'ArrowDown': activeObj.top += step; moved = true; break;
@@ -648,7 +704,6 @@ function addIcon(n) {
                     if (!activeObj.isEditing) { deleteObj(); moved = true; }
                     break;
             }
-
             if (moved) {
                 e.preventDefault(); 
                 activeObj.setCoords();
@@ -664,122 +719,129 @@ function addIcon(n) {
         const o = canvas.getActiveObject();
         if(o) {
             if(o.fill && typeof o.fill === 'string') {
-                document.getElementById('textColorPicker').value = o.fill;
-                document.getElementById('iconColorPicker').value = o.fill;
+                const tCP = document.getElementById('textColorPicker');
+                const iCP = document.getElementById('iconColorPicker');
+                if(tCP) tCP.value = o.fill;
+                if(iCP) iCP.value = o.fill;
             }
             if(o.fontSize) {
-                document.getElementById('fontSizeSlider').value = o.fontSize;
-                document.getElementById('fontSizeDisplay').innerText = o.fontSize;
+                const fsS = document.getElementById('fontSizeSlider');
+                const fsD = document.getElementById('fontSizeDisplay');
+                if(fsS) fsS.value = o.fontSize;
+                if(fsD) fsD.innerText = o.fontSize;
             }
         }
     }
 
-    // [New] 이미지 자르기 로직
-    document.getElementById('upload').onchange = (e) => { 
-        const files = e.target.files;
-        if(files && files.length > 0) {
-            const file = files[0];
-            const reader = new FileReader();
-            reader.onload = (evt) => {
-                imageToCrop.src = evt.target.result;
-                cropModal.style.display = 'flex'; // 모달 열기
-                if(cropper) { cropper.destroy(); } // 기존 크로퍼 초기화
-                cropper = new Cropper(imageToCrop, {
-                    viewMode: 1,
-                    autoCropArea: 0.8,
-                });
-            };
-            reader.readAsDataURL(file);
-        }
-    };
+    const uploadEl = document.getElementById('upload');
+    if(uploadEl) {
+        uploadEl.onchange = (e) => { 
+            const files = e.target.files;
+            if(files && files.length > 0) {
+                const file = files[0];
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    imageToCrop.src = evt.target.result;
+                    cropModal.style.display = 'flex'; 
+                    if(cropper) { cropper.destroy(); } 
+                    cropper = new Cropper(imageToCrop, {
+                        viewMode: 1,
+                        autoCropArea: 0.8,
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+    }
 
     function cancelCrop() {
         cropModal.style.display = 'none';
-        document.getElementById('upload').value = ''; // 입력 초기화
+        const up = document.getElementById('upload');
+        if(up) up.value = ''; 
         if(cropper) { cropper.destroy(); cropper = null; }
     }
 
-function confirmCrop() {
-    if(!cropper) return;
-
-    // 1. 크로퍼에서 이미지를 가져올 때 해상도를 강제로 높입니다.
-    const canvasData = cropper.getCroppedCanvas({
-        width: 1500, // 더 넉넉하게 1500픽셀로 설정 (화질 향상)
-        imageSmoothingQuality: 'high' // 최상의 부드러움 적용
-    });
-
-    if(canvasData) {
-        const croppedDataUrl = canvasData.toDataURL('image/png', 1.0); // 최고 품질 PNG 추출
-        fabric.Image.fromURL(croppedDataUrl, (img) => {
-            img.scaleToHeight(100); 
-            canvas.add(img).centerObject(img).setActiveObject(img);
-            canvas.renderAll(); // 캔버스 즉시 갱신
+    function confirmCrop() {
+        if(!cropper) return;
+        const canvasData = cropper.getCroppedCanvas({
+            width: 1500, 
+            imageSmoothingQuality: 'high' 
         });
-        cancelCrop(); // 모달 닫기 및 초기화
+
+        if(canvasData) {
+            const croppedDataUrl = canvasData.toDataURL('image/png', 1.0); 
+            fabric.Image.fromURL(croppedDataUrl, (img) => {
+                img.scaleToHeight(100); 
+                canvas.add(img).centerObject(img).setActiveObject(img);
+                canvas.renderAll(); 
+            });
+            cancelCrop(); 
+        }
     }
-}
 
-async function sendDataToGoogleSheet() {
-    // 1. 색상 코드와 한글 이름을 매칭하는 사전 (옵션관리 시트의 컬러 순서대로 추가하세요)
-    const colorMap = {
-        "#ffffff": "화이트",
-        "#800020": "와인",
-        "#000000": "블랙",
-        "#f5f5f0": "아이보리",
-        "#d3d3d3": "라이트그레이",
-        // 필요한 색상을 여기에 추가하세요.
-    };
-
-    // 2. 현재 선택된 코드에 해당하는 이름을 찾고, 없으면 코드 그대로 표시
-    const normalizedColor = currentTowelColor.toLowerCase();
-    const colorName = colorMap[normalizedColor] || currentTowelColor;
-
-    const name = document.getElementById('custName').value, 
-          phone = document.getElementById('custPhone').value, 
-          address = document.getElementById('custAddress').value, 
-          deliveryDate = document.getElementById('custDeliveryDate').value;
-    
-    const qty = document.getElementById('custQty').value, 
-          totalPrice = document.getElementById('displayPriceCheckout').innerText;
-    
-    const packIndex = document.getElementById('packagingSelect').value, 
-          packName = packagingData[packIndex].name;
-
-    if(!name || !phone || !address) { showPopup("알림", "성함, 연락처, 주소는 필수입니다!"); return; }
-    if(!qty || qty < 1) { showPopup("알림", "수량을 입력해주세요."); return; }
-
-    try {
-        guide.visible = false;
-        const imageData = canvas.toDataURL({ format: 'png', multiplier: 5, quality: 1.0 }); 
-        guide.visible = true; 
-        canvas.renderAll();
-
-        const orderData = { 
-            name, 
-            phone, 
-            address, 
-            deliveryDate, 
-            quantity: qty, 
-            totalPrice: totalPrice, 
-            productName: selectedProductName, 
-            color: colorName, // [수정됨] 이제 #000000 대신 "블랙"이 전송됩니다.
-            packaging: packName, 
-            image: imageData 
+    async function sendDataToGoogleSheet() {
+        const colorMap = {
+            "#ffffff": "화이트",
+            "#800020": "와인",
+            "#000000": "블랙",
+            "#f5f5f0": "아이보리",
+            "#d3d3d3": "라이트그레이",
+            "#ff0000": "레드",
+            "#0000ff": "블루",
+            "#ffff00": "옐로우",
+            "#008000": "그린"
         };
+
+        const normalizedColor = currentTowelColor.toLowerCase();
+        const colorName = colorMap[normalizedColor] || currentTowelColor;
+
+        const name = document.getElementById('custName').value, 
+              phone = document.getElementById('custPhone').value, 
+              address = document.getElementById('custAddress').value, 
+              deliveryDate = document.getElementById('custDeliveryDate').value,
+              qty = document.getElementById('custQty').value, 
+              totalPrice = document.getElementById('displayPriceCheckout').innerText;
         
-        showPopup("주문 전송 중", "잠시만 기다려 주세요...");
-        
-        await fetch(scriptURL, { 
-            method: 'POST', 
-            mode: 'no-cors', 
-            body: JSON.stringify(orderData) 
-        });
-        
-        showPopup("✅ 주문 완료!", "주문서가 정상적으로 접수되었습니다.");
-    } catch(e) {
-        showPopup("전송 오류", "오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+        const packSel = document.getElementById('packagingSelect');
+        const packIndex = packSel ? packSel.value : 0;
+        const packName = (packagingData[packIndex] && packagingData[packIndex].name) ? packagingData[packIndex].name : "기본포장";
+
+        if(!name || !phone || !address) { showPopup("알림", "성함, 연락처, 주소는 필수입니다!"); return; }
+        if(!qty || qty < 1) { showPopup("알림", "수량을 입력해주세요."); return; }
+
+        try {
+            guide.visible = false;
+            const imageData = canvas.toDataURL({ format: 'png', multiplier: 4, quality: 1.0 }); 
+            guide.visible = true; 
+            canvas.renderAll();
+
+            const orderData = { 
+                name, 
+                phone, 
+                address, 
+                deliveryDate, 
+                quantity: qty, 
+                totalPrice: totalPrice, 
+                productName: selectedProductName, 
+                color: colorName, 
+                packaging: packName, 
+                image: imageData 
+            };
+            
+            showPopup("주문 전송 중", "잠시만 기다려 주세요...");
+            
+            await fetch(scriptURL, { 
+                method: 'POST', 
+                mode: 'no-cors', 
+                body: JSON.stringify(orderData) 
+            });
+            
+            showPopup("✅ 주문 완료!", "주문서가 정상적으로 접수되었습니다.");
+        } catch(e) {
+            console.error("Submit Error:", e);
+            showPopup("전송 오류", "오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+        }
     }
-}
 
     fetchData();
 </script>
