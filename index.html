@@ -151,37 +151,33 @@
         
         #mobileLandscapeOrderBtn { display: none; }
         /* 아이콘 그리드 전용 스타일 추가 */
-#icon-grid, #font-grid, #design-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* 너비에 맞춰 자동 배치 */
+/* 아이콘/폰트 그리드 설정: 한 줄에 4개씩 나오게 하고, 넘치면 스크롤 생성 */
+#icon-grid, #font-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important; /* 무조건 한 줄에 4개 */
     gap: 10px;
-    max-height: 400px; /* 너무 길어지지 않게 높이 제한 */
-    overflow-y: auto;  /* 내용이 많으면 스크롤 생성 */
+    max-height: 300px; /* 높이가 넘어가면 */
+    overflow-y: auto;  /* 스크롤 생성 */
     padding: 10px;
     border: 1px solid #eee;
-    border-radius: 8px;
-    background: #fafafa;
+    background: #fdfdfd;
 }
 
-/* 개별 버튼 디자인 */
+/* 폰트 그리드는 가로로 더 길게 쓰고 싶다면 아래 설정 사용 */
+#font-grid {
+    grid-template-columns: repeat(2, 1fr) !important; /* 폰트는 글자가 길어서 한 줄에 2개 권장 */
+}
+
 .item-btn {
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    min-height: 80px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 15px 5px;
-    cursor: pointer;
-    transition: 0.2s;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background: white;
 }
-
-.item-btn:hover {
-    border-color: #800020; /* DUWELL 브랜드 컬러 */
-    background: #fff5f7;
-}
-
 /* 아코디언 내용 영역이 아이콘을 다 수용하도록 설정 */
 #acc-icon .accordion-content {
     max-height: none !important; /* 높이 제한 강제 해제 */
@@ -480,76 +476,38 @@ const iconPaths = {
     }
 
 function init() {
-    // 1. 가이드 라인 설정
-    guide = new fabric.Rect({ left: 5, top: 5, width: 856, height: 90, fill: 'transparent', stroke: '#800020', strokeDashArray: [4, 4], selectable: false, evented: false, opacity: 0.3 });
-    canvas.add(guide);
-    
-const ig = document.getElementById('icon-grid');
+    // 1. 아이콘 그리드 - iconPaths에 있는 모든 아이콘을 출력
+    const ig = document.getElementById('icon-grid');
     if (ig) {
-        ig.innerHTML = ''; // 기존 내용 삭제
+        ig.innerHTML = ''; // 기존 4개만 있던 내용을 지움
         Object.keys(iconPaths).forEach(name => {
-            const btn = document.createElement('button');
-            btn.className = 'item-btn';
-            btn.onclick = () => addIcon(name);
-            btn.innerHTML = `
-                <svg viewBox="0 0 24 24" style="width:30px; height:30px; fill:#333; margin-bottom:8px;">
+            let b = document.createElement('button');
+            b.className = 'item-btn';
+            b.onclick = () => addIcon(name);
+            b.innerHTML = `
+                <svg viewBox="0 0 24 24" style="width:24px; height:24px; fill:#333; margin-bottom:5px;">
                     <path d="${iconPaths[name]}"></path>
                 </svg>
-                <span style="font-size:12px;">${name}</span>
-            `;
-            ig.appendChild(btn);
+                <span style="font-size:11px;">${name}</span>`;
+            ig.appendChild(b);
         });
     }
 
-    // 2. 폰트 뿌리기 (fonts 배열의 모든 서체를 가져옴)
+    // 2. 폰트 그리드 - fonts 배열에 있는 모든 폰트를 출력
     const fg = document.getElementById('font-grid');
     if (fg) {
-        fg.innerHTML = '';
-        fonts.forEach(fontName => {
-            const btn = document.createElement('button');
-            btn.className = 'item-btn';
-            btn.style.fontFamily = `"${fontName}", sans-serif`;
-            btn.onclick = () => addText(fontName, 'DUWELL');
-            btn.innerHTML = `
-                <span style="font-size:18px; margin-bottom:5px;">${fontName}</span>
-                <span style="font-size:12px; color:#999;">가나다라마바사</span>
-            `;
-            fg.appendChild(btn);
-        });
-    }
-
-    // 3. 폰트 그리드 생성 (실제 폰트 모양 반영)
-    const fg = document.getElementById('font-grid');
-    if (fg) {
-        fg.innerHTML = ''; // 초기화
-       const fonts = [
-    'Noto Sans KR', 'Nanum Myeongjo', 'Nanum Gothic', 'Nanum Pen Script', 'Nanum Brush Script',
-    'Do Hyeon', 'Jua', 'Black Han Sans', 'Gugi', 'Yeon Sung', 'East Sea Dokdo', 
-    'Gamja Flower', 'Poor Story', 'Gaegu', 'Sunflower', 'Song Myung', 'Stylish',
-    'Dongle', 'Gowun Batang', 'Hahmlet', 'Bagel Fat One'
-];
-        
+        fg.innerHTML = ''; // 기존 6개만 있던 내용을 지움
         fonts.forEach(f => {
-            let b = document.createElement('button'); 
-            b.className = 'item-btn font-item';
-            // 버튼 자체에 해당 폰트를 적용하여 미리보기가 가능하게 함
+            let b = document.createElement('button');
+            b.className = 'item-btn';
             b.style.fontFamily = `'${f}', sans-serif`;
-            b.onclick = () => addText(f, 'DUWELL'); 
-            
-            b.style.display = 'flex';
-            b.style.flexDirection = 'column';
-            b.style.alignItems = 'center';
-            b.style.justifyContent = 'center';
-            b.style.padding = '10px';
-            b.style.minHeight = '60px';
-            
+            b.onclick = () => addText(f, 'DUWELL');
             b.innerHTML = `
-                <span style="font-size:16px; margin-bottom:4px;">${f}</span>
-                <span style="font-size:12px; color:#888;">가나다라</span>`;
+                <span style="font-size:14px;">${f}</span>
+                <span style="font-size:11px; color:#888;">가나다라</span>`;
             fg.appendChild(b);
         });
     }
-
     // 4. 추천 디자인 그리드
     const dg = document.getElementById('design-grid');
     if (dg) {
