@@ -590,34 +590,35 @@ function init() {
         if(displayPrice) displayPrice.innerText = priceStr + "원";
     }
 
-    function setMode(m) {
-        currentMode = m;
-        const mock = document.getElementById('towelMockup'), 
-              txt = document.getElementById('modeText'), 
-              embBg = document.querySelector('.embroidery-bg'), 
-              btnP = document.getElementById('btn-print'), 
-              btnE = document.getElementById('btn-embroidery'), 
-              warning = document.getElementById('embroideryWarning');
-        
-        if(m === 'print') { 
-            if(mock) mock.className='mode-print'; 
-            if(txt) txt.innerText='● 전사 인쇄 (화이트 밴드) 미리보기'; 
-            if(embBg) embBg.style.display='none'; 
-            canvas.backgroundColor='#ffffff'; 
-            if(btnP) btnP.classList.add('active'); 
-            if(btnE) btnE.classList.remove('active');
-            if(warning) warning.style.display = 'none';
-        } else { 
-            if(mock) mock.className='mode-embroidery'; 
-            if(txt) txt.innerText='● 컴퓨터 자수 (일반 수건) 미리보기'; 
-            if(embBg) embBg.style.display='block'; 
-            canvas.backgroundColor=null; 
-            if(btnE) btnE.classList.add('active'); 
-            if(btnP) btnP.classList.remove('active');
-            if(warning) warning.style.display = 'block';
-        }
-        canvas.renderAll();
+function setMode(m) {
+    currentMode = m;
+    const mock = document.getElementById('towelMockup'), 
+          txt = document.getElementById('modeText'), 
+          embBg = document.querySelector('.embroidery-bg'), 
+          // ID를 btn-p, btn-e로 수정
+          btnP = document.getElementById('btn-p'), 
+          btnE = document.getElementById('btn-e'), 
+          warning = document.getElementById('embroideryWarning');
+    
+    if(m === 'print') { 
+        if(mock) mock.className='mode-print'; 
+        if(txt) txt.innerText='● 전사 인쇄 (화이트 밴드) 미리보기'; 
+        if(embBg) embBg.style.display='none'; 
+        canvas.set('backgroundColor', '#ffffff'); // Fabric.js 배경색 적용 방식
+        if(btnP) btnP.classList.add('active'); 
+        if(btnE) btnE.classList.remove('active');
+        if(warning) warning.style.display = 'none';
+    } else { 
+        if(mock) mock.className='mode-embroidery'; 
+        if(txt) txt.innerText='● 컴퓨터 자수 (일반 수건) 미리보기'; 
+        if(embBg) embBg.style.display='block'; 
+        canvas.set('backgroundColor', null); 
+        if(btnE) btnE.classList.add('active'); 
+        if(btnP) btnP.classList.remove('active');
+        if(warning) warning.style.display = 'block';
     }
+    canvas.renderAll();
+}
     
     function setTowel(c, el) { 
         currentTowelColor = c; 
@@ -662,13 +663,19 @@ function init() {
         }
     }
 
-    function addText(f, t) { 
-        const cp = document.getElementById('textColorPicker');
-        const fillValue = cp ? cp.value : '#000000';
-        const it = new fabric.IText(t, { left: 100, top: 25, fontFamily: f, fontSize: 40, fill: fillValue }); 
-        canvas.add(it).centerObject(it).setActiveObject(it); 
-    }
-
+function addText(f, t = "문구를 입력하세요") { 
+    const cp = document.getElementById('textColorPicker');
+    const fillValue = cp ? cp.value : '#333333';
+    const it = new fabric.IText(t, { 
+        left: 100, 
+        top: 25, 
+        fontFamily: f, 
+        fontSize: 40, 
+        fill: fillValue,
+        editingBorderColor: '#800020'
+    }); 
+    canvas.add(it).centerObject(it).setActiveObject(it); 
+}
     function addIcon(n) { 
         const cp = document.getElementById('iconColorPicker');
         const currentColor = cp ? cp.value : '#000000';
