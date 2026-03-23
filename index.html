@@ -390,14 +390,14 @@
         header.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    const recommendedDesigns = [
-        { name: '감사', url: 'https://via.placeholder.com/200/800020/FFFFFF?text=Thank+You' },
-        { name: '생일', url: 'https://via.placeholder.com/200/e67e22/FFFFFF?text=Happy+B-Day' },
-        { name: '웨딩', url: 'https://via.placeholder.com/200/e91e63/FFFFFF?text=Wedding' },
-        { name: '첫돌', url: 'https://via.placeholder.com/200/3498db/FFFFFF?text=1st+B-Day' },
-        { name: '로고', url: 'https://via.placeholder.com/200/2ecc71/FFFFFF?text=Logo' },
-        { name: '기타', url: 'https://via.placeholder.com/200/333333/FFFFFF?text=Etc' }
-    ];
+const recommendedDesigns = [
+    { name: '감사(꽃)', url: 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=200&q=80' },
+    { name: '돌잔치(아기)', url: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=200&q=80' },
+    { name: '웨딩(반지)', url: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=200&q=80' },
+    { name: '생일(케이크)', url: 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&w=200&q=80' },
+    { name: '반려동물', url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=200&q=80' },
+    { name: '로고(심플)', url: 'https://images.unsplash.com/photo-1572044162444-ad60f128bde2?auto=format&fit=crop&w=200&q=80' }
+];
 
     function showPopup(title, msg) {
         document.getElementById('popupTitle').innerText = title;
@@ -567,10 +567,17 @@ function changeProduct() {
         const it = new fabric.IText(t, { left: 100, top: 25, fontFamily: f, fontSize: 40, fill: document.getElementById('textColorPicker').value }); 
         canvas.add(it).centerObject(it).setActiveObject(it); 
     }
-    function addIcon(n) { 
-        const p = new fabric.Path(iconPaths[n], { fill: document.getElementById('iconColorPicker').value, scaleX: 1.5, scaleY: 1.5 }); 
-        canvas.add(p).centerObject(p).setActiveObject(p); 
-    }
+// addIcon 함수 수정
+function addIcon(n) { 
+    // 현재 선택된 '글자 색상' 혹은 '아이콘 색상' 피커의 값을 가져옴
+    const currentColor = document.getElementById('iconColorPicker').value;
+    const p = new fabric.Path(iconPaths[n], { 
+        fill: currentColor, 
+        scaleX: 1.5, 
+        scaleY: 1.5 
+    }); 
+    canvas.add(p).centerObject(p).setActiveObject(p); 
+}
     
     function addDesignImage(url) {
         fabric.Image.fromURL(url, (img) => {
