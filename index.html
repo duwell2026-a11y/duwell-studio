@@ -151,6 +151,31 @@
         }
         
         #mobileLandscapeOrderBtn { display: none; }
+        /* 아이콘 그리드 전용 스타일 추가 */
+#icon-grid { 
+    display: grid; 
+    grid-template-columns: repeat(5, 1fr); /* 한 줄에 5개씩 배치 (더 촘촘하게) */
+    gap: 8px; 
+    padding: 10px 0;
+}
+
+/* 아코디언 내용 영역이 아이콘을 다 수용하도록 설정 */
+#acc-icon .accordion-content {
+    max-height: none !important; /* 높이 제한 강제 해제 */
+    overflow: visible !important;
+}
+
+/* 아이콘 버튼 크기 최적화 */
+#icon-grid .item-btn {
+    padding: 8px 4px;
+    min-height: 60px;
+    font-size: 11px;
+}
+
+#icon-grid .item-btn svg {
+    width: 24px;
+    height: 24px;
+}
     </style>
 </head>
 <body>
